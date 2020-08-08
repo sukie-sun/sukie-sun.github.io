@@ -1,0 +1,17 @@
+<div style="margin-top:10px;">   
+  <span class="post-time">      
+    <span class="post-meta-item-icon">    
+     <i class="fa fa-keyboard-o">&lt/i>      
+     <span class="post-meta-item-text">  字数统计: &lt/span>     
+      <span class="post-count"><%= wordcount(post.content) %>字&lt/span>   
+     &lt/span>   
+  &lt/span>
+<span class="post-time">
+      &ampnbsp; | &ampnbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half">&lt/i>
+        <span class="post-meta-item-text">  阅读时长: &lt/span>
+        <span class="post-count"><%= min2read(post.content) %>分&lt/span>
+      &lt/span>
+   &lt/span>
+&lt/div>

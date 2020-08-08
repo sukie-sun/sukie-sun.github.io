@@ -1,0 +1,60 @@
+<%- partial('_partial/head') %>
+<body>
+<div id="container">
+  <div class="left-col">
+    <%- partial('_partial/left-col', null, { cache: !config.relative_link }) %>
+  </div>
+  <div class="hide-left-col" title="隐藏侧栏">
+    <i class="fa fa-angle-double-left"></i>
+  </div>
+  <div class="mid-col">
+    <%- partial('_partial/mobile-nav', null, { cache: !config.relative_link }) %>
+    <div class="body-wrap"><%- body %></div>
+    <%- partial('_partial/footer') %>
+  </div>
+  <script type="application/javascript">
+    var hide = false, leftWidth;
+    $('.hide-left-col').click(function () {
+      if (hide) {
+        $('.left-col').css('width', leftWidth)
+        $('.left-col .intrude-less').fadeIn(200)
+        $('#tocButton').fadeIn(200);
+        ($('#switch-btn').css('display') === 'block' && $('#switch-area').css('display') === 'block') || $('#toc').fadeIn(200)
+        $('.hide-left-col').css('left', leftWidth).html('<i class="fa fa-angle-double-left"></i>')
+        $('.mid-col').css('left', leftWidth)
+        $('#post-nav-button').css('left', leftWidth)
+        $('#post-nav-button > a:nth-child(2)').css('display', 'block')
+        hide = false
+      } else {
+        leftWidth = $('.left-col')[0].style.width
+        $('.left-col').css('width', 0)
+        $('.left-col .intrude-less').fadeOut(200)
+        $('#toc').fadeOut(100)
+        $('#tocButton').fadeOut(100)
+        $('.hide-left-col').css('left', 0).html('<i class="fa fa-angle-double-right"></i>')
+        $('.mid-col').css('left', 0)
+        $('#post-nav-button').css('left', 0)
+        $('#post-nav-button > a:nth-child(2)').css('display', 'none')
+        if ($('.post-list').is(':visible')) {
+          $('#post-nav-button .fa-bars,#post-nav-button .fa-times').toggle()
+          $('.post-list').toggle()
+        }
+        hide = true
+      }
+    })
+  </script>
+  <%- partial('_partial/after-footer') %>
+</div>
+<% if (theme.share.on && theme.share.addthis){ %>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=<%- theme.share.addthis_pubid %>"></script>
+<% } %>
+<link href="<%- theme.CDN.aos_css %>" rel="stylesheet">
+<script type="text/javascript">
+  AOS.init({
+    easing: 'ease-out-back', once: true,
+  })
+</script>
+<!--<script type="text/javascript" src="<%- theme.CDN.bubbly_bg %>"></script>-->
+<!--<script>var userAgent=window.navigator.userAgent;bubbly({blur:1,bubbleFunc:()=>`hsla(${Math.random() * 50}, 100%, 50%, .3)`,bubbles:userAgent.match(/AppleWebKit.*Mobile.*/)?15:30,colorStart:"#fff4e6",colorStop:"#ffe9e4",compose:"source-over"})</script>-->
+</body>
+</html>

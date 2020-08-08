@@ -1,0 +1,144 @@
+@import "nib"
+@import "_variables"
+@import "_util/mixin"
+@import "_util/grid"
+
+global-reset()
+
+ol{
+  list-style: decimal;
+  padding-left: 20px;
+}
+ul{
+  list-style: none;
+}
+input, button
+  margin: 0
+  padding: 0
+  &::-moz-focus-inner
+    border: 0
+    padding: 0
+
+html
+  height: 100%;
+  min-height: 100%;
+  min-width: 300px;
+  font-size: base-font-size;
+
+body
+  height: 100%;
+  min-height: 100%;
+  font-family: font-sans, font-chs, sans-serif;
+  background: #F5DFC6;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  -moz-font-feature-settings: "liga" on;
+  color: #333
+  -webkit-overflow-scrolling: touch
+
+::selection
+  background: rgba(147, 181, 224, .6);
+  color: white;
+
+h2,h3,h4,h5,h6 {
+  font-family: font-serif, serif;
+  font-weight bold
+}
+h1,h2,h3{
+  display: block;
+}
+h1 {
+  font-size: 1.6rem;
+  font-family: "Segoe UI", font-sans, font-chs, sans-serif;
+}
+h2 {
+  font-size:1.4rem
+}
+h3 {
+  font-size:1.15rem
+}
+h4,h5,h6{
+  font-size:1rem
+}
+
+a {
+  text-decoration:none;
+  outline-width:0;
+  color:#258fb8;
+  outline: none;
+}
+
+.alignleft {
+  float:left
+}
+.alignright {
+  float:right
+}
+.clearfix {
+  zoom:1
+}
+.clearfix:after {
+  content:"";
+  display:table;
+  clear:both
+}
+.inner {
+  width:1000px;
+  margin:0 auto
+}
+.hide{
+  display: none;
+}
+@media screen and (min-width:769px) and (max-width:1040px) {
+  html {
+    font-size: 14px !important;
+  }
+  .inner {
+    width:100%
+  }
+}
+@media only screen and (max-width:768px) {
+  html {
+    font-size: 16px !important;
+  }
+}
+
+@import "_extend"
+@import "_partial/main"
+@import "_partial/archive"
+@import "_partial/article"
+@import "_partial/archive"
+@import "_partial/footer"
+
+if share
+  @import "_partial/share"
+
+@import "_partial/page"
+@import "_partial/instagram"
+@import "_partial/tagcloud"
+@import "_partial/scroll"
+@import "_partial/mobile-slider"
+
+if search
+  @import "_partial/search"
+
+@import "_partial/customise/color-scheme"
+
+if sidebar
+  @import "_partial/sidebar"
+
+.article-entry code
+  color gray
+  padding .05em .3em
+  border-radius 3px
+  //box-shadow 1px 1px 1px rgba(0,0,0, .08)
+  background rgba(255, 250, 165, .7)
+
+.article-entry pre code
+  padding 0
+
+.fancybox-image
+  background #ffffff !important
+
+#live2dcanvas
+  z-index 999 !important
