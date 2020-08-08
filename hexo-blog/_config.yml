@@ -47,6 +47,7 @@ external_link:
 filename_case: 0
 render_drafts: false
 ##  Hexo添加图片到博客中 ：生成一个以文章名称命名的文件夹
+## 安装插件：npm install hexo-asset-image --save
 ##post_asset_folder: false
 post_asset_folder: true
 relative_link: false
