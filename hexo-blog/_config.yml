@@ -1,8 +1,11 @@
 # Hexo Configuration
 ## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
-
-# Site
+## git 克隆yelee主题到指定路径 （原仓库地址）
+## git clone https://github.com/MOxFIVE/hexo-theme-yelee.git themes/yelee-pre
+## 教学指导地址： https://blog.wangriyu.wang/2017/08-Hexo.html
+##----------------------------------------------------------
+# Site网站标题
 title: Sukie's Blog
 subtitle: '新世界编程'
 description: 'Hello World！'
@@ -11,8 +14,12 @@ author: Sukie
 language: en
 timezone: ''
 
+# 统计字数和阅读时长
+word_count: true
+
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
+#url: http://yoursite.com
 url: https://sukie-sun.github.io
 root: /
 permalink: :year/:month/:day/:title/
@@ -21,6 +28,17 @@ pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
   trailing_html: true # Set to false to remove trailing '.html' from permalinks
 
+######文章永久链接
+######永久链接的好处很多，最直接的，无论以后改变了文章标题还是 markdown 文档的名字，
+######永久链接都不会改变，我们的文章链接就不会失效 ：
+######安装插件，这个插件会根据文章名字生成一个随机的字符串：
+###### npm install hexo-abbrlink --save
+####permalink: category/:abbrlink.html
+####abbrlink:
+####  alg: crc32  # 算法：crc16(default) and crc32
+####  rep: hex    # 进制：dec(default) and hex
+  
+  
 # Directory
 source_dir: source
 public_dir: public
@@ -36,6 +54,8 @@ skip_render:
     -  404/404.html
     -  static/**
 
+##----------------------------------------------------------
+   
 # Writing
 new_post_name: :title.md # File name of new posts
 default_layout: post
@@ -47,7 +67,6 @@ external_link:
 filename_case: 0
 render_drafts: false
 ##  Hexo添加图片到博客中 ：生成一个以文章名称命名的文件夹
-## 安装插件：npm install hexo-asset-image --save
 ##post_asset_folder: false
 post_asset_folder: true
 relative_link: false
@@ -106,7 +125,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-## theme: landscape
+##theme: landscape
 theme: yelee
 
 # Deployment

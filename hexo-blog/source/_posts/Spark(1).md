@@ -1,6 +1,9 @@
 ---
 title: Spark学习（一）
-tags: [计算引擎,基于内存,RDD算子]
+tags:
+  - 计算引擎
+  - 基于内存
+  - RDD算子
 categories: Spark
 grammar_cjkRuby: true
 mathjax: true
@@ -9,7 +12,6 @@ description: 'Spark的详细学习第一篇章:Apache Spark 是专为大规模�
 abbrlink: 84961d20
 date: 2019-02-16 21:30:15
 update: 2019-02-17 21:30:15
-top: 10
 ---
 
 ---
@@ -32,54 +34,6 @@ storm：流式
 
 > Spark是用Scala编写的，方便快速编程
 
----------------------------------
-
-```yaml
-#指定文章中关闭目录 `toc: false`
----
-title: Hello World
-date: 2015-08-19 00:00:00
-toc: false
----
-```
-
-
-
-```yaml
-#指定文章中关闭版权信息 original: false
----
-title: Hello World
-date: 2015-08-19 00:00:00
-original: false
----
-```
-
-
-
-```yaml
-#指定文章中关闭图片浏览器 fancybox: false
----
-title: Hello World
-date: 2015-08-19 00:00:00
-fancybox: false
----
-```
-
-<div class="github-widget" data-repo="sukie-sun/sukie-sun.github.io"></div>
-
-
-
-```html
-<iframe
-  frameborder="no"
-  border="0"
-  marginwidth="0"
-  marginheight="0"
-  width=330
-  height=450
-  src="//music.163.com/outchain/player?type=0&id=883067320&auto=1&height=430"> // 歌曲 type=2，歌单 type=0，id 填对应 id
-</iframe>
-```
 
 ## 2、与MapReduce的区别
 

@@ -9,26 +9,15 @@ Yelee: "3.5"
 menu:
   主页: /
   所有文章: /archives/
-  随笔: /tags/essay
+  随笔: /essays/
   标签云: /tags/
   关于我: /about/
-
-#禁止Hexo编译static文件夹
-# Directory
-source_dir: source
-public: public
-tag_dir: tags
-archive_dir: archives
-code_dir: downloads/code
-i18n_dir: lang
-#比如 README.md、比如百度验证页面、比如谷歌验证页面、比如自定义404页面等，如果我们不想某些文件被渲染，就需要改一下配置文件
-skip_render: static/**
+  更新日志: /logs/
 
 # Link to your avatar | 填写头像地址
 avatar: /img/avatar.png
 
 # Small icon of Your site | 站点小图标地址
-# yelee/source/favicon.png
 favicon: /favicon.png
 
 # Internationalization | 主题语言
@@ -49,11 +38,13 @@ since: 2017
 ## Keep "mailto:" in Email | 设置 Email 时保留 "mailto:"
 ## Encrypt email 加密邮件地址 http://ctrlq.org/encode/
 ## RSS requires a plugin to take effect | 使用 RSS 需先安装对应插件
+## 安装命令：npm install hexo-generator-feed --save
 ## https://github.com/hexojs/hexo-generator-feed
 
 subnav:
   Email: "mailto:123@123.com"
   #新浪微博: "sina weibo"
+  ##GitHub 图标失效问题 https://www.gokuweb.com/Web/39c1ec60.html#GitHub-%E5%9B%BE%E6%A0%87
   GitHub: "#"
   #V2EX: "#"
   RSS: "/atom.xml"
@@ -94,7 +85,6 @@ subnav:
 # 选一个作为网站评论系统，其他保持禁用。
 
 preload_comment: true
-## true: 评论区跟随页面一起加载
 ## false: 当点击评论条等区域时再加载评论模块
 ## false: load comment's section until u click/hover on the bar/icon
 
@@ -132,8 +122,7 @@ valine:
   notify: true # 评论回复邮箱提醒
   avatar: mp # 匿名者头像选项
   placeholder: Just go go!
-  
-  
+
 # >>> Style Customisation 样式自定义 <<<
 
 # Background | 背景
@@ -210,7 +199,7 @@ friends:
 #friends: false
 
 #是否开启“关于我”。
-aboutme: 专注新世界编程
+aboutme: 专注于前端
 #aboutme: false
 
 # Open link in a new tab | 是否在新窗口打开链接
@@ -240,9 +229,10 @@ ie_updater:
   ## http://browsehappy.com/
   ## http://outdatedbrowser.com/
 
+##----------------------------------------------------
 # Tab Title Change | 标签页标题切换
 tab_title_change: 
-  on: true
+  on: false
   left_tab_title: '(つェ⊂) 别走嘛~ '
   return_tab_title: '(*´∇｀*) 我来啦~ '
 
@@ -256,7 +246,7 @@ tab_title_change:
 search: 
   #on: true 即为启用搜索 
   on: true
-  onload: false
+  onload: false 
   ## true: get search.xml file when the page has loaded (索引数据 search.xml 随页面一起加载)
   ## false: get the file when search box gets focus(当激活搜索框时再下载索引数据)
 
@@ -266,15 +256,17 @@ fancybox: true
 
 # Display Math(LaTeX, MathML...) | 数学公式支持
 ## https://www.mathjax.org/
-## true  或者 false
+## mathjax: false
 mathjax: true
+
+##----------------------------------------------------
 
 # Socail Share | 是否开启分享
 share: 
   on: true
   baidu: true
-##  addthis: false
-##  addthis_pubid: "ra-56ff76c972fc0cf9"
+  addthis: false
+  addthis_pubid: "ra-56ff76c972fc0cf9"
   ## Go to www.addthis.com/dashboard to get your pubid (in src of Code)
   ## and customize AddThis share buttons
 
@@ -299,7 +291,8 @@ visit_counter:
 
 # GitHub Repo Widget
 # https://github.com/hustcc/GitHub-Repo-Widget.js
-github_widget: false
+##github_widget: false
+github_widget: true
 
 # Progress Bar | 页面加载进度条
 # Demo: http://github.hubspot.com/pace/docs/welcome/
