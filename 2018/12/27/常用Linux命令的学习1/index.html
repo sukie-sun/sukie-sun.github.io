@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Sukie" />
+
+
+
+<meta name="description" content="关于Linux操作的常用命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用Linux命令的学习（一）">
+<meta property="og:url" content="https://sukie-sun.github.io/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/index.html">
+<meta property="og:site_name" content="Sukie&#39;s Blog">
+<meta property="og:description" content="关于Linux操作的常用命令">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-12-27T12:16:47.000Z">
+<meta property="article:modified_time" content="2020-08-07T13:07:21.814Z">
+<meta property="article:author" content="Sukie">
+<meta property="article:tag" content="Linux命令">
+<meta name="twitter:card" content="summary">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Sukie&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>常用Linux命令的学习（一） | Sukie&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src=""></script>
+<script src=""></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.0.0"><link rel="stylesheet" href="/css/prism-a11y-dark.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Sukie</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">你好，新世界、新编程</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>Menu</li>
+                        <li>Tags</li>
+                        
+                        <li>Friends</li>
+                        
+                        
+                        <li>About Me</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/essays/">随笔</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                            <li><a href="/logs/">更新日志</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-6/" rel="tag">CentOS 6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HDFS/" rel="tag">HDFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive/" rel="tag">Hive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/List/" rel="tag">List</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MapReduce/" rel="tag">MapReduce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark-shell/" rel="tag">Spark shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkSql/" rel="tag">SparkSql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkStreaming/" rel="tag">SparkStreaming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkUI/" rel="tag">SparkUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark%E6%A1%86%E6%9E%B6/" rel="tag">Spark框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sqoop/" rel="tag">Sqoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Storm%EF%BC%8C%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">Storm，流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zookeeper/" rel="tag">Zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/" rel="tag">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sparkcore%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" rel="tag">sparkcore应用案例</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yarn/" rel="tag">yarn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag">不同数据源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AA%E4%BA%BA%E5%85%B4%E8%B6%A3/" rel="tag">个人兴趣</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E/" rel="tag">分布式搜索和分析引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">分布式离线计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B/" rel="tag">分而治之</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%81%E8%A3%85RDD/" rel="tag">封装RDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%BF%E6%92%AD/" rel="tag">广播</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F/" rel="tag">消息队列系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%AF%E5%8A%A0%E5%99%A8/" rel="tag">累加器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81/" rel="tag">静态</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">新世界编程</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Sukie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Sukie</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">你好，新世界、新编程</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/essays/">随笔</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                    <li><a href="/logs/">更新日志</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
+</nav>
+      <div class="body-wrap"><article id="post-常用Linux命令的学习1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/" class="article-date">
+      <time datetime="2018-12-27T12:16:47.000Z" itemprop="datePublished">2018-12-27</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      常用Linux命令的学习（一）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud" style="display: flex; flex-wrap: wrap">  
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li></ul>
+		<span class="post-count">总字数2k</span>
+		<span class="post-count">预计阅读7分钟</span>		  
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+		  
+			
+		
+        <h2 id="一、命令指南（manual）：man"><a href="#一、命令指南（manual）：man" class="headerlink" title="一、命令指南（manual）：man"></a>一、命令指南（manual）：man</h2><a id="more"></a>
+
+<p>安装 man：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">yum install man –y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>（-y 表示获得允许，无需确认）</p>
+</blockquote>
+<p>查看ls命令指南：</p>
+<pre class="line-numbers language-shell"><code class="language-shell"> man ls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="二、目录操作命令"><a href="#二、目录操作命令" class="headerlink" title="二、目录操作命令"></a>二、目录操作命令</h2><p><strong>切换</strong>目录：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">cd + 目录的路径<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>查看</strong>当前目录所在的完整路径：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">pwd<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>新建</strong>目录：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">mkdir +目录名字<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>查看</strong> —当前目录所用有的子目录和文件：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">ls   ，ll等价于  ls –l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​        查看—目录下的所有东西（包括隐藏文件）：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">  ls –al   等价于 ll -a<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>拷贝</strong>目录或文件：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">cp –r install.log  install2.log<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>复制文件，-r 表示递归复制，此时，可用于复制整个目录</p>
+</blockquote>
+<p><strong>删除</strong>目录或文件：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">rm  -r install.log<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>此时需要手动输入y ，代表确认删除。可加 –f参数，直接删除，无需确认。</p>
+<p>当需要一个目录下所有东西时，加-r参数，代表遍历删除。</p>
+<p>(rmdir只能删除空目录)</p>
+</blockquote>
+<p><strong>移动</strong>目录或文件：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">mv + 目录/文件名字 + 其他路径<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​         将test目录移动到  根目录/ 下 : </p>
+<pre class="line-numbers language-shell"><code class="language-shell">  mv test / <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>（如果移动到当前目录，用另外一个名称，则可以实现重命名的效果）</p>
+</blockquote>
+<p><strong>更改</strong>文件或目录的名字：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">mv + 旧目录名字 + 新目录名<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>(     -r 用于递归的拷贝，删除，移动目录)</p>
+</blockquote>
+<h2 id="三、文件操作命令"><a href="#三、文件操作命令" class="headerlink" title="三、文件操作命令"></a>三、文件操作命令</h2><h3 id="1、一般文件操作"><a href="#1、一般文件操作" class="headerlink" title="1、一般文件操作"></a>1、一般文件操作</h3><p><code>在Linux中：一切皆文件</code></p>
+<p><strong>新建</strong>文件：touch  install.log<br>​        (vim install.log   编辑文件，如果文件不存在，就会新建一个对应的文件，并进入文件的编辑模式，如果按 :wq 会保存文件并退出，如果按 :q 则不保存退出)<br>​<br><strong>查看</strong>文件内容：cat +（文件名）<br>（一次性显示整个文件的内容，文件内容过多时文本在屏幕上迅速闪过（滚屏），用,户体验不好）</p>
+<p>一次命令显示一屏文本：</p>
+<p>满屏后停下来，并且在屏幕的底部出现一个提示信息，给出至今己显示的该文件的百分比。</p>
+<pre><code>             more +（文件名）
+
+             按键         效果  
+           Space         显示下一屏文本内容
+           B             显示上一屏文本内容
+           Enter         显示下一行文本内容
+           Q             退出查看   </code></pre>
+<pre><code>            less+（文件名）
+          按键                  效果
+           Q                 退出less 命令 
+           h                 显示帮助界面
+           u                 向后滚动半页 
+           d                 向前翻半页 
+           e | Enter（回车）  向后翻一行文本
+           space(空格键)      滚动一页 
+           b                 向后翻一页 
+           [pagedown]：      向下翻动一页 
+           [pageup]：        向上翻动一页
+            上下键，          向上一行，向下一行</code></pre>
+<p>从<strong>头部</strong>打印文件内容：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">        head  -10 +（文件名）  打印文件1到10行<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>从<strong>尾部</strong>打印文件内容​  </p>
+<pre class="line-numbers language-shell"><code class="language-shell">      tail -10 +（文件名）打印文件最后10行<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>tail还可用来查看文件内容的更新变化</p>
+<p>tail -f (文件名)  </p>
+</blockquote>
+<p><strong>查找</strong>文件或目录​    </p>
+<pre class="line-numbers language-shell"><code class="language-shell">    find +（路径名） –name +（文件名）<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​        举例：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">find / -name profile   <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    在/(根目录)目录下查找 名字为profile的文件或目录</p>
+<p> 也可利用正则：<br>​             举例：</p>
+<pre class="line-numbers language-shell"><code class="language-shell"> find /etc -name pro*<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​         在/etc目录下查找以pro开头的文件或目录</p>
+<blockquote>
+<p>注意：</p>
+<ul>
+<li><p>路径越精确，查找的范围越小，速度越快 </p>
+</li>
+<li><p>查找的目录必须是文件所在目录的父级目录</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="2、文件编辑"><a href="#2、文件编辑" class="headerlink" title="2、文件编辑"></a>2、文件编辑</h3><h4 id="vi"><a href="#vi" class="headerlink" title="vi"></a>vi</h4><p>（1） vi    进入编辑模式 —–&gt;按i   进入插入模式 ——-&gt;  按Esc 退出编辑模式</p>
+<pre><code>vi  filename   :打开或新建文件，并将光标置于第一行首 
+vi +n filename ：打开文件，并将光标置于第n行首 
+vi + filename  ：打开文件，并将光标置于最后一行首 
+vi +/pattern filename：打开文件，并将光标置于第一个与 pattern匹配的字符串所在的行首 </code></pre>
+<blockquote>
+<p> filename  为文件名</p>
+</blockquote>
+<p>（2）在文件vi（文件编辑）模式下</p>
+<ul>
+<li><strong>命令行模式</strong> </li>
+</ul>
+<pre><code>:w      保存
+:q      退出
+:wq     保存并退出
+:q!     强制退出，不保存
+:set nu |ctrl+g    显示文本行数
+:set nonu          去除显示的行数
+:s/p1/p2/g         将当前行中所有p1均用p2替代 
+:n1,n2s/p1/p2/g    将第n1至n2行中所有p1均用p2替代 
+:g/p1/s//p2/g      将文件中所有p1均用p2替换</code></pre>
+<ul>
+<li><strong>一般模式</strong> </li>
+</ul>
+<pre><code>按键：
+yy    复制光标所在行(常用) 
+nyy   复制光标所在行的向下n行，例如， 20yy则是复制20行(常用) 
+p|P   p为复制的数据粘贴在光标下一行， P则为粘贴在光标上一行(常用)
+G     光标移至第最后一行
+nG    光标移动至第N行行首
+n+    光标下移n行 
+n-    光标上移n行 
+H     光标移至屏幕顶行 
+M     光标移至屏幕中间行 
+L     光标移至屏幕最后行 
+
+dd    删除所在行 
+x或X  删除一个字符，x删除光标后的，而X删除光标前的 
+u     撤销(常用)
+
+：N,Md    删除第N行到第M行
+：,$-1d   删除当前光标到倒数第一行数据
+
+按键：
+    i: 在当前光标所在字符的前面，转为输入模式；
+    a: 在当前光标所在字符的后面，转为输入模式；
+    o: 在当前光标所在行的下方，新建一行，并转为输入模式；
+    I：在当前光标所在行的行首，转换为输入模式
+    A：在当前光标所在行的行尾，转换为输入模式
+    O：在当前光标所在行的上方，新建一行，并转为输入模式；
+
+---逐字符移动：
+h: 左    l: 右
+
+j: 下    k: 上
+</code></pre>
+<blockquote>
+<p>（不同：在我的xshell中是 yyn实现复制所在行的向下n行）</p>
+<p>（nB|nb:光标向上移动n行）</p>
+</blockquote>
+<h4 id="vim"><a href="#vim" class="headerlink" title="vim"></a>vim</h4><p>Vim是从 vi 发展出来的一个文本编辑器</p>
+<p>安装vim 软件：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">yum install vim -y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li><em>用vim 打开/etc/profile 文件，</em></li>
+<li><em>特点：编辑器对文本的内容进行了高亮，使整个文件的内容可读性大大加强</em> ，其他均与vi相同</li>
+</ul>
+<h3 id="3、文件上传下载"><a href="#3、文件上传下载" class="headerlink" title="3、文件上传下载"></a>3、文件上传下载</h3><p>安装上传下载命令：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">yum install lrzsz -y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h4 id="上传文件：（windows—-gt-linux）"><a href="#上传文件：（windows—-gt-linux）" class="headerlink" title="上传文件：（windows—&gt;linux）"></a>上传文件：（windows—&gt;linux）</h4><blockquote>
+<p>命令 ：rz  </p>
+<p>弹出windows上传文件窗口</p>
+</blockquote>
+<h4 id="下载文件：-linux—-gt-windows"><a href="#下载文件：-linux—-gt-windows" class="headerlink" title="下载文件：(linux—&gt;windows)"></a>下载文件：(linux—&gt;windows)</h4><p><code>注意</code>：sz命令只能下载文件，不能下载目录，推荐将目录压缩成tar包或使用工具软件：Winscp【Xftp】</p>
+<blockquote>
+<p>命令：sz  （文件名）</p>
+<p>弹出windows下载窗口,下载文件到指定文件目录,下载完之后，按ctrl+c结束。</p>
+</blockquote>
+<h3 id="4、文件传输"><a href="#4、文件传输" class="headerlink" title="4、文件传输"></a>4、文件传输</h3><h4 id="1）本地→远程"><a href="#1）本地→远程" class="headerlink" title="(1）本地→远程"></a>(1）本地→远程</h4><blockquote>
+<p>文件  ：  scp local_file remote_username@remote_ip:remote_folder   </p>
+<p>目录 ：  scp -r local_folder remote_username@remote_ip:remote_folder</p>
+</blockquote>
+<p>举例：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">方式一：
+  scp -rf /etc/profile root@192.168.198.128:/etc/
+
+方式二:
+  scp  -r /etc/profile root@node01 /etc/ 
+
+方式三：
+  scp -r /etc/profile node01:/etc/
+
+方式四：
+  scp -r /ec/profile node01:'pwd'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>scp</strong> ：远程传输文件命令</p>
+<p><strong>-r</strong>  ：- 指的是后面跟的是参数    r  指的是遍历指定文件    <strong>f</strong>  指的是不用询问</p>
+<p><strong>/etc/profile</strong>  : 是指定传输的文件</p>
+<p><strong>root</strong>： 远程机器的账户名      <strong>@</strong>    远程机器的IP地址   <strong>：</strong>   <strong>/etc/</strong>    远程机器上指定的目录</p>
+<p><strong>node01</strong>：远程机器的别名</p>
+<p><strong>‘pwd’</strong>： 本地要远程传输文件所在的目录</p>
+</blockquote>
+<blockquote>
+<p>第一次远程拷贝时，需要在箭头1初输入yes确认一下，验证一下远程主机。然后在箭头2处输入一下远程主机的密码。</p>
+</blockquote>
+<h4 id="2）远程→本地"><a href="#2）远程→本地" class="headerlink" title="(2）远程→本地"></a>(2）远程→本地</h4><blockquote>
+<p>文件 ： scp remote_username@remote_ip:remote_file local_folder</p>
+<p>目录 ： scp remote_username@remote_ip:remote_folder local_folder   </p>
+</blockquote>
+<h2 id="四、文件系统"><a href="#四、文件系统" class="headerlink" title="四、文件系统"></a>四、文件系统</h2><pre><code> Linux目录结构：
+
+  bin  存放二进制可执行文件(ls,cat,mkdir等)                                                          
+  boot  存放用于系统引导时使用的各种文件
+
+  dev 用于存放设备文件
+
+  etc  存放系统配置文件
+
+  home 存放所有用户文件的根目录
+
+  lib  存放跟文件系统中的程序运行所需要的共享库及内核模块
+
+  mnt  系统管理员安装临时文件系统的安装点
+
+  opt  额外安装的可选应用程序包所放置的位置
+
+  proc  虚拟文件系统，存放当前内存的映射
+
+  root  超级用户目录
+
+  sbin  存放二进制可执行文件，只有root才能访问
+
+  tmp  用于存放各种临时文件
+
+  usr  用于存放系统应用程序，比较重要的目录/usr/local 本地管理员软件安装目录
+
+  var  用于存放运行时需要改变数据的文件
+</code></pre>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>Title:</span><a href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">Sukie</a></p>
+        <p><span>Created:</span>2018-12-27, 20:16:47</p>
+        <p><span>Updated:</span>2020-08-07, 21:07:21</p>
+        <p>
+            <span>Full URL:</span><a class="post-url" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/" title="常用Linux命令的学习（一）">https://sukie-sun.github.io/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/</a>
+            <span class="copy-path" data-clipboard-text="From https://sukie-sun.github.io/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/　　By Sukie" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">
+                    常用Linux命令的学习（二）
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">
+                    Linux系统数据库MySQL安装
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%91%BD%E4%BB%A4%E6%8C%87%E5%8D%97%EF%BC%88manual%EF%BC%89%EF%BC%9Aman"><span class="toc-number">1.</span> <span class="toc-text">一、命令指南（manual）：man</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%9B%AE%E5%BD%95%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">二、目录操作命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">三、文件操作命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E4%B8%80%E8%88%AC%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="toc-number">3.1.</span> <span class="toc-text">1、一般文件操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%96%87%E4%BB%B6%E7%BC%96%E8%BE%91"><span class="toc-number">3.2.</span> <span class="toc-text">2、文件编辑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vi"><span class="toc-number">3.2.1.</span> <span class="toc-text">vi</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vim"><span class="toc-number">3.2.2.</span> <span class="toc-text">vim</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD"><span class="toc-number">3.3.</span> <span class="toc-text">3、文件上传下载</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%EF%BC%9A%EF%BC%88windows%E2%80%94-gt-linux%EF%BC%89"><span class="toc-number">3.3.1.</span> <span class="toc-text">上传文件：（windows—&gt;linux）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6%EF%BC%9A-linux%E2%80%94-gt-windows"><span class="toc-number">3.3.2.</span> <span class="toc-text">下载文件：(linux—&gt;windows)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="toc-number">3.4.</span> <span class="toc-text">4、文件传输</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89%E6%9C%AC%E5%9C%B0%E2%86%92%E8%BF%9C%E7%A8%8B"><span class="toc-number">3.4.1.</span> <span class="toc-text">(1）本地→远程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89%E8%BF%9C%E7%A8%8B%E2%86%92%E6%9C%AC%E5%9C%B0"><span class="toc-number">3.4.2.</span> <span class="toc-text">(2）远程→本地</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">4.</span> <span class="toc-text">四、文件系统</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
+
+    <script>
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"常用Linux命令的学习（一）　| Sukie's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+	  <section id="comments" style="margin: 2em; padding: 2em; background: rgba(255, 255, 255, 0.5)">
+    <div id="vcomment" class="comment"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js"></script>
+    <script>
+      new Valine({
+        el: '#vcomment',
+        notify: 'true',
+        verify: 'true',
+        app_id: "qha2YfPRUR6IN1LfnbliYqay-gzGzoHsz",
+        app_key: "b00TckRiHRVQphnJwuFp9isO",
+        placeholder: "Just go go!",
+        avatar: "mp"
+      });
+    </script>
+</section>	  
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/" title="Pre: 常用Linux命令的学习（二）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/" title="Next: Linux系统数据库MySQL安装">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/08/hello-world/">Hello World</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Spark(6)/">Spark学习（六）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/Spark(5)/">Spark学习（五）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/Spark(4)/">Spark学习（四）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/Spark(3)/">Spark学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/17/Spark(2)/">Spark学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Spark(1)/">Spark学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/List%E6%96%B9%E6%B3%95/">List方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Map%E6%96%B9%E6%B3%95/">Map方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Set%E6%96%B9%E6%B3%95/">Set方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/String%E6%96%B9%E6%B3%95/">String 方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">面试问题总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95/">数组方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">Scala学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">Storm学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/28/Kafka%E5%AD%A6%E4%B9%A0/">Kafka学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/25/Elasticsearch%E5%AD%A6%E4%B9%A0/">Elasticsearch学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/CDH%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0/">CDH部署操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/Flume%E5%AD%A6%E4%B9%A0/">Flume学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">HBase性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">Sqoop学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84UDF%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/">Hive中常用的UDF函数总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%BC%98%E5%8C%96/">Hive优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/11/Hive%E5%AD%A6%E4%B9%A0/">Hive学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/MapReduce%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">MapReduce源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/07/MapReduce%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">MapReduce案例实践</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/05/MapReduce%E5%AD%A6%E4%B9%A0/">MapReduce学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Zookeeper%E5%AD%A6%E4%B9%A0/">Zookeeper学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Yarn%E5%AD%A6%E4%B9%A0/">YARN的入门学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Hadoop2.X/">Hadoop2.X</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/HDFS%E5%AD%A6%E4%B9%A0/">HDFS学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A02/">Nginx入门学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A01/">Nginx入门学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/30/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%80%9D%E6%83%B3/">大数据思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A03/">常用Linux命令的学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">常用Linux命令的学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">Linux系统数据库MySQL安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/Linux%E7%B3%BB%E7%BB%9FCentOS%206%E5%AE%89%E8%A3%85/">Linux学习之CentOS 6系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85maven%E5%9D%90%E6%A0%87%E4%BE%9D%E8%B5%96/">手动安装maven坐标依赖</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/hexo/">Hexo搭建个人博客</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2020 Sukie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+
+    </div>
+    
+    
+<script src="/js/GithubRepoWidget.js"></script>
+
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var iPad = window.navigator.userAgent.indexOf('iPad');
+      if (iPad > -1) {
+        let bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+        let bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+        $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+      } else if ($(".left-col").css("display") === "none") {
+        $("body").css({
+          "background-image": "url(/background/mobile.jpg)",
+          "background-repeat": "no-repeat",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      } else {
+        var backgroundnum = 5;
+        var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+        $("body").css({
+          "background": backgroundimg,
+          "background-position": "0% 80%",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      }
+    })
+  </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+             github: ".github-widget a", 
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+            
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script src="/js/busuanzi_pure_mini.js"></script>
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?6b4caaf6c3a0542e82c2abbce9da41cc"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"live2d_models/live2d-widget-model-chitose"},"display":{"position":"right","width":250,"height":350,"hOffset":-50,"vOffset":-85},"mobile":{"show":false},"react":{"opacityDefault":0.9,"opacityOnHover":0.3}});</script></body>
+</html>

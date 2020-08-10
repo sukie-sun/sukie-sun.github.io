@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Sukie" />
+
+
+
+<meta name="description" content="基于HDFS的数据仓库---三驾马车之一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase学习">
+<meta property="og:url" content="https://sukie-sun.github.io/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Sukie&#39;s Blog">
+<meta property="og:description" content="基于HDFS的数据仓库---三驾马车之一">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDly1g1gla9rm43j30lo0c3wjo.jpg">
+<meta property="article:published_time" content="2019-01-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-07T13:07:21.743Z">
+<meta property="article:author" content="Sukie">
+<meta property="article:tag" content="HBase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wx1.sinaimg.cn/large/005zftzDly1g1gla9rm43j30lo0c3wjo.jpg">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Sukie&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>HBase学习 | Sukie&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src=""></script>
+<script src=""></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.0.0"><link rel="stylesheet" href="/css/prism-a11y-dark.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Sukie</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">你好，新世界、新编程</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>Menu</li>
+                        <li>Tags</li>
+                        
+                        <li>Friends</li>
+                        
+                        
+                        <li>About Me</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/essays/">随笔</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                            <li><a href="/logs/">更新日志</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-6/" rel="tag">CentOS 6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HDFS/" rel="tag">HDFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive/" rel="tag">Hive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/List/" rel="tag">List</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MapReduce/" rel="tag">MapReduce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark-shell/" rel="tag">Spark shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkSql/" rel="tag">SparkSql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkStreaming/" rel="tag">SparkStreaming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkUI/" rel="tag">SparkUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark%E6%A1%86%E6%9E%B6/" rel="tag">Spark框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sqoop/" rel="tag">Sqoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Storm%EF%BC%8C%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">Storm，流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zookeeper/" rel="tag">Zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/" rel="tag">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sparkcore%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" rel="tag">sparkcore应用案例</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yarn/" rel="tag">yarn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag">不同数据源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AA%E4%BA%BA%E5%85%B4%E8%B6%A3/" rel="tag">个人兴趣</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E/" rel="tag">分布式搜索和分析引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">分布式离线计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B/" rel="tag">分而治之</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%81%E8%A3%85RDD/" rel="tag">封装RDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%BF%E6%92%AD/" rel="tag">广播</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F/" rel="tag">消息队列系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%AF%E5%8A%A0%E5%99%A8/" rel="tag">累加器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81/" rel="tag">静态</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">新世界编程</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Sukie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Sukie</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">你好，新世界、新编程</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/essays/">随笔</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                    <li><a href="/logs/">更新日志</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
+</nav>
+      <div class="body-wrap"><article id="post-HBase学习" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/" class="article-date">
+      <time datetime="2019-01-14T16:00:00.000Z" itemprop="datePublished">2019-01-15</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HBase学习
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/HDFS/">HDFS</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud" style="display: flex; flex-wrap: wrap">  
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li></ul>
+		<span class="post-count">总字数4.2k</span>
+		<span class="post-count">预计阅读19分钟</span>		  
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+		  
+			
+		
+        <p>非关系型数据库</p>
+<p><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HBaseIntegration">官网</a></p>
+<h2 id="一、对HBase数据库的-基本了解"><a href="#一、对HBase数据库的-基本了解" class="headerlink" title="一、对HBase数据库的 基本了解"></a>一、对HBase数据库的 基本了解</h2><a id="more"></a>
+
+<h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><blockquote>
+<p>基于Hadoop 的分布式数据库</p>
+<p>特点：</p>
+<p>1、高可靠性</p>
+<p>2、高性能</p>
+<p>（以上两点：基于分布式的特点）</p>
+<p>3、面向列</p>
+<p>（以（K,V）存储，有唯一标记的rowkey，value包含的是数据库中的列值）</p>
+<p>4、可伸缩</p>
+<p>（搭建在集群上）</p>
+<p>5、实时读写</p>
+<p>（用时间戳唯一标记每一版本的数据记录）</p>
+</blockquote>
+<h3 id="2、工作结构"><a href="#2、工作结构" class="headerlink" title="2、工作结构"></a>2、工作结构</h3><blockquote>
+<p>1,利用Hadoop的HDFS作为其文件存储系统</p>
+<p>2,利用Hadoop的MapReduce来计算处理HBase中的海量数据</p>
+<p>3,利用Zookeeper作为其分布式协同服务</p>
+<p>4,主要用来存储非结构化和半结构化的松散数据（NoSQL非关系型数据库有redis、MongoDB等</p>
+</blockquote>
+<h3 id="3、关系型数据库"><a href="#3、关系型数据库" class="headerlink" title="3、关系型数据库"></a>3、关系型数据库</h3><blockquote>
+<p>1、定义</p>
+<p>关系模型指的就是二维表格模型；</p>
+<p>而一个关系型数据库就是由二维表及其之间的联系所组成的一个数据组织</p>
+<p>2、三大优点</p>
+<ul>
+<li>容易理解</li>
+<li>使用方便</li>
+<li>易于维护</li>
+</ul>
+<p>3、三大瓶颈</p>
+<ul>
+<li>高并发读写需求</li>
+</ul>
+<p>硬盘I/O是一个很大的瓶颈，并且很难能做到数据的强一致性。</p>
+<ul>
+<li>海量数据的读写性能低</li>
+</ul>
+<p>在一张包含海量数据的表中查询，效率是非常低的。</p>
+<ul>
+<li>​    扩展性和可用性差</li>
+</ul>
+<p>丰富的完整性使得横向扩展把难度加大了</p>
+</blockquote>
+<p><code>ACID特性</code></p>
+<blockquote>
+<p>ACID，指数据库事务正确执行的四个基本要素的缩写;</p>
+<p><code>原子性</code>（Atomicity）:<strong>事务不可再分割</strong></p>
+<p>整个事务中的所有操作，要么全部完成，要么全部不完成，不可能停滞在中间某个环节。事务在执行过程中发生错误，会被回滚（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。</p>
+<p><code>一致性</code>（Consistency）:<strong>事务前后数据保持一致</strong></p>
+<p>事务必须始终保持系统处于一致的状态，不管在任何给定的时间并发事务有多少。如果事务是并发多个，系统也必须如同串行事务一样操作。</p>
+<p><code>隔离性</code>（Isolation）：<strong>串行化</strong>，使得同一时间仅有一个请求用于同一数据。</p>
+<p>事务的隔离性是多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。</p>
+<p><code>持久性</code>（Durability）：</p>
+<p>在事务完成以后，该事务对数据库所作的更改便持久的保存在数据库之中，并不会被回滚。</p>
+</blockquote>
+<h3 id="4、非关系型数据库"><a href="#4、非关系型数据库" class="headerlink" title="4、非关系型数据库"></a>4、非关系型数据库</h3><blockquote>
+<p>1、存储格式：key value键值对，文档，图片等等，结构不固定 </p>
+<p>2、可以减少一些时间和空间的开销，仅需要根据id取出相应的value就可以完成查询。</p>
+<p>3、一般不支持ACID特性，无需经过SQL解析，读写性能高</p>
+<p>4、不提供where字段条件过滤</p>
+<p>5、难以体现设计的完整性，只适合存储一些较为简单的数据</p>
+</blockquote>
+<h2 id="二、对HBase的基本里了解"><a href="#二、对HBase的基本里了解" class="headerlink" title="二、对HBase的基本里了解"></a>二、对HBase的基本里了解</h2><h3 id="1、数据结构组成"><a href="#1、数据结构组成" class="headerlink" title="1、数据结构组成"></a>1、数据结构组成</h3><p>（ 1）Row key  :</p>
+<blockquote>
+<p>唯一标记决定一行数据<br>按照字典排序<br>最大只能存储64KB的字节数据<br>设计非常关键</p>
+</blockquote>
+<p>（2）Column Family列族 &amp; qualifier列</p>
+<blockquote>
+<p><code>列族</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            必须作为表模式(schema)定义的一部分预先给出，</p>
+<p>表中的每个列都归属于某个列族；</p>
+<p>权限控制、存储以及调优都是在列族层面进行的；</p>
+<p><code>列名</code></p>
+<p>以列族作为前缀，每个“列族”都可以有多个列成员(column)； </p>
+<p>新的列可以随后按需、动态加入；</p>
+</blockquote>
+<p>（3）Cell单元格</p>
+<blockquote>
+<p> 由行和列的坐标交叉决定； 单元格是有版本的（有时间戳决定）；</p>
+<p> 单元格的内容是未解析的字节数组；cell中的数据是没有类型的，全部是字节码形式存贮。</p>
+<pre class="line-numbers language-tex"><code class="language-tex">由&#123;rowkey， column( =<family> +<qualifier>)， version&#125; 唯一确定的单元。<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+</blockquote>
+<p>（4）Timestamp时间戳</p>
+<blockquote>
+<p>在HBase每个cell存储单元对同一份数据有多个版本，</p>
+<p>根据唯一的时间戳来区分每个版本之间的差异，</p>
+<p>不同版本的数据按照时间倒序排序，最新的数据版本排在最前面</p>
+<p>时间戳的类型是64位整型。</p>
+<p>时间戳可以由HBase(在数据写入时自动)赋值，精确到毫秒</p>
+<p>时间戳也可以由客户显式赋值，但必须唯一性</p>
+</blockquote>
+<p>（5）HLog(WAL log)</p>
+<blockquote>
+<ul>
+<li>HLog文件就是一个普通的Hadoop SequenceFile</li>
+<li>HLog Sequence File的Key是HLogKey对象<ul>
+<li>HLogKey中记录了写入数据的归属信息，包括table和region名字，sequence number（起始值为0或是最近一次存入文件系统中sequence  number）和timestamp（写入时间）</li>
+</ul>
+</li>
+<li>HLog SequeceFile的Value是HBase的KeyValue对象，即对应HFile中的KeyValue<ul>
+<li>存储hbase表的操作记录，(K，V)数据信息   </li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>2、体系架构</p>
+<p><img src="https://wx1.sinaimg.cn/large/005zftzDly1g1gla9rm43j30lo0c3wjo.jpg"></p>
+<p>（1）Client</p>
+<blockquote>
+<p>包含访问HBase的接口并在缓存中维护着已经访问过的Region位置信息来加快对HBase的访问。</p>
+</blockquote>
+<p>（2）Zookeeper</p>
+<blockquote>
+<ul>
+<li><p>保证任何时候，集群中只有一个master；</p>
+</li>
+<li><p>存贮所有Region的寻址入口。</p>
+</li>
+<li><p>实时监控Region server的上线和下线信息，并实时通知Master</p>
+</li>
+<li><p>存储HBase的schema和table元数据</p>
+</li>
+</ul>
+</blockquote>
+<p>Zookeeper是一个很好的集群管理工具，被大量用于分布式计算，提供配置维护、域名服务、分布式同步、组服务等</p>
+<p>（3）Master</p>
+<blockquote>
+<p>为Region server分配region；</p>
+<ul>
+<li>负责Region server的负载均衡；</li>
+<li>发现失效的Region server并将其上的region重新分配；</li>
+<li>在Region分裂或合并后，负责重新调整Region的分布</li>
+<li>管理用户对table的增删改操作；</li>
+</ul>
+</blockquote>
+<p>（4）RegionServer    </p>
+<blockquote>
+<ul>
+<li><p>维护region，处理对这些region的IO请求</p>
+</li>
+<li><p>负责切分在运行过程中变得过大的region</p>
+</li>
+</ul>
+</blockquote>
+<p>（5）Region</p>
+<blockquote>
+<ul>
+<li><p>保存一个表里面某段连续的数据，每个表一开始只有一个region；</p>
+</li>
+<li><p>随着数据不断插入表，region不断增大，当增大到一个阀值的时候，region就会等分会两个新的region（裂变）</p>
+<p>（HBase自动把表水平划分成多个区域(region)）</p>
+</li>
+<li><p>当table中的行不断增多，就会有越来越多的region。这样一张完整的表被保存在多个Regionserver上</p>
+</li>
+</ul>
+</blockquote>
+<p>（6）Memstore与storefile</p>
+<blockquote>
+<ul>
+<li>一个region由2-3store组成，一个store对应一个CF（列族）</li>
+<li>store包括位于内存中的memstore和位于磁盘的storefile。</li>
+<li>写操作先写入memstore，当memstore中的数据达到某个阈值（默认64M），hregionserver会启动flashcache进程写入storefile，每次写入形成单独的一个storefile；</li>
+<li>当storefile文件的数量增长到一定阈值后，系统会进行合并（minor、major，compaction），在合并过程中会进行版本合并和删除工作（majar），形成更大的storefile</li>
+<li>当一个region所有storefile的大小和数量超过一定阈值后，会把当前的region分割为两个，并由hmaster分配到相应的regionserver服务器，实现负载均衡</li>
+<li>客户端检索数据，先在memstore找，找不到再找storefile</li>
+<li>HRegion是HBase中分布式存储和负载均衡的最小单元。最小单元就表示不同的HRegion可以分布在不同的HRegion server上。</li>
+<li>每个Strore又由一个memStore和0至多个StoreFile组成,StoreFile以HFile格式保存在HDFS上(HFile)。</li>
+</ul>
+</blockquote>
+<h2 id="三、Hbase-安装部署"><a href="#三、Hbase-安装部署" class="headerlink" title="三、Hbase 安装部署"></a>三、Hbase 安装部署</h2><p>完全分布式搭建</p>
+<p>1、安装包准备</p>
+<p><a target="_blank" rel="noopener" href="http://hbase.apache.org/downloads.html">Hbase</a>（本文使用0.98版本）</p>
+<p>将tar上传至Linux系统，进行解压安装</p>
+<p>2、修改配置文件hbase-env.sh（在Hbase的解压目录的conf目录中）</p>
+<p>修添加JAVA_HOME环境变量</p>
+<pre><code># The java implementation to use.  Java 1.7+ required.
+# export JAVA_HOME=/usr/java/jdk1.6.0/
+export JAVA_HOME=/usr/soft/jdk1.8.0_191</code></pre>
+<p>不使用HBase的默认zookeeper配置，（使用自己的）：</p>
+<pre><code># Tell HBase whether it should manage it&#39;s own instance of Zookeeper or not.
+ export HBASE_MANAGES_ZK=false
+</code></pre>
+<p>3、修改配置hbase-site.xml（在Hbase的解压目录的conf目录中）</p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.rootdir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+          <span class="token comment" spellcheck="true">&lt;!--Hdfs配置时的集群名--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>hdfs://Sukie:8020/hbase<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.cluster.distributed<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--zookeeper的三台节点--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.zookeeper.quorum<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>node1,node2,node3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--配置http访问的port---></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.master.info.port<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>60010<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>注意：（会出bug的地方）</code>：</p>
+<p>1、问题描述：</p>
+<blockquote>
+<p>HBase启动时，警告：<br>Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0 </p>
+</blockquote>
+<p>解决方案：</p>
+<p><code>原因：</code>由于使用了JDK8 ，需要在HBase的配置文件中hbase-env.sh，注释掉两行。</p>
+<pre class="line-numbers language-sh"><code class="language-sh"># Configure PermSize. Only needed in JDK7. You can safely remove it for JDK8+
+#export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m"
+#export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>重新启动HBase。</p>
+<p>2、问题描述：</p>
+<blockquote>
+<p>配置好HBase后，各项服务正常，但想从浏览器通过端口60010看下节点情况，但是提示拒绝访问</p>
+</blockquote>
+<p><code>检测：</code>在服务器上netstat -natl|grep 60010 发现并没有60010端口</p>
+<p><code>原因：</code>HBase 1.0 之后的版本都需要在hbase-site.xml中配置端口，如下</p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.master.info.port<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>60010<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>重新启动HBase,在浏览器再次访问，就ok了</p>
+<p>4、添加配置regionservers 文件（在Hbase的解压目录的conf目录中）</p>
+<p>添加配置的regionservers 的主机名</p>
+<p>regionservers</p>
+<pre><code>node00
+node01
+node02  </code></pre>
+<p>5、添加配置backup-masters</p>
+<p>添加配置的master备份的主机名（在Hbase的解压目录的conf目录中）</p>
+<p>backup-masters</p>
+<pre><code>node02 </code></pre>
+<p>6、将Hadoop安装解压目录/etc/hadoop目录下的hdfs-site.xml文件 拷贝到Hbase的解压目录的conf目录中</p>
+<p>7、配置环境变量 ~/.bash_profile</p>
+<pre class="line-numbers language-sh"><code class="language-sh">JAVA_HOME=/usr/soft/jdk1.8.0_191
+export PATH=$PATH:$JAVA_HOME/bin
+HADOOP_HOME=/usr/soft/hadoop-2.6.5
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+ZOOKEEPER_HOME=/usr/soft/zookeeper-3.4.13
+export PATH=$PATH:$ZOOKEEPER_HOME/bin
+HIVE_HOME=/usr/soft/apache-hive-1.2.1-bin
+export PATH=$PATH:$HIVE_HOME/bin
+SQOOP_HOME=/usr/soft/sqoop-1.4.6
+export PATH=$PATH:$SQOOP_HOME/bin
+HBASE_HOME=/usr/soft/hbase-1.2.9
+export PATH=$PATH:$HBASE_HOME/bin
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>source ~/.bash_profile</p>
+</blockquote>
+<p>8、将如上配置远程发送至其他节点（Hbase 、 ./bash_profile）</p>
+<p>9、各个节点注意要做时间同步</p>
+<pre class="line-numbers language-shell"><code class="language-shell">ntpdate cn.ntp.org.cn<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>10、启动HDFS集群：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">zkServer.sh start
+start-hdfs.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>11、启动：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">start-hbase.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>显示：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">starting master, logging to /usr/soft/hbase-1.2.9/bin/../logs/hbase-root-master-node00.out
+node02: starting regionserver, logging to /usr/soft/hbase-1.2.9/bin/../logs/hbase-root-regionserver-node02.out
+node01: starting regionserver, logging to /usr/soft/hbase-1.2.9/bin/../logs/hbase-root-regionserver-node01.out
+node00: starting regionserver, logging to /usr/soft/hbase-1.2.9/bin/../logs/hbase-root-regionserver-node00.out
+node02: starting master, logging to /usr/soft/hbase-1.2.9/bin/../logs/hbase-root-master-node02.out<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>12、查看进程：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">jps<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>13、浏览器访问：node00:60010</p>
+<p>14、关闭：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">stop-hbase.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="四、通过hbase-shell命令进入HBase-命令行接口"><a href="#四、通过hbase-shell命令进入HBase-命令行接口" class="headerlink" title="四、通过hbase shell命令进入HBase 命令行接口"></a>四、通过hbase shell命令进入HBase 命令行接口</h2><pre class="line-numbers language-shell"><code class="language-shell">hbase shell<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>进入hbase交互式界面。</p>
+<p>通过<code>help</code>可查看所有命令的支持以及帮助手册</p>
+<blockquote>
+<p>帮助创建</p>
+<p>hbase(main):007:0&gt;  help create</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th>Shell命令</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">创建表</td>
+<td>create ‘表名’, ‘列族名1’[,…]</td>
+<td>create ‘t1’，‘cf1’</td>
+</tr>
+<tr>
+<td align="center">列出所有表</td>
+<td>list</td>
+<td>list</td>
+</tr>
+<tr>
+<td align="center">添加记录</td>
+<td>put ‘表名’, ‘RowKey’, ‘列族名称:列名’, ‘值’</td>
+<td>put        ‘t1’,‘rk_00101’,‘cf1:name’,‘zs’</td>
+</tr>
+<tr>
+<td align="center">查看记录</td>
+<td>get ‘表名’, ‘RowKey’, ‘列族名称:列名’</td>
+<td>get ‘t1’,‘rk_00101’                         get ‘t1’,‘rk_00101’,‘cf1:name’</td>
+</tr>
+<tr>
+<td align="center">查看所有记录</td>
+<td>count  ‘表名’</td>
+<td>count ‘t1’</td>
+</tr>
+<tr>
+<td align="center">删除记录</td>
+<td>delete  ‘表名’   , ‘RowKey’,   ‘列族名称:列名’</td>
+<td>delete ‘t1’,‘rk_00101’,‘cf1:name’</td>
+</tr>
+<tr>
+<td align="center">删除一张表</td>
+<td>先要屏蔽该表，才能对该表进行删除。 <br>第一步 disable   ‘表名称’ <br>第二步 drop   ‘表名称’</td>
+<td>disable ‘t1’                                                      drop ‘t1’</td>
+</tr>
+<tr>
+<td align="center">查看所有记录</td>
+<td>scan   ‘表名 ‘</td>
+<td>scan ‘t1’</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td>create ‘t2’, {NAME =&gt; ‘cf1’, VERSIONS =&gt; 2}, METADATA =&gt; { ‘mykey’ =&gt; ‘myvalue’ }</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">查看未加工数据中指定版本记录</td>
+<td>scan ‘t1’, {RAW =&gt; true, VERSIONS =&gt; 3}                           raw  未加工的</td>
+<td>3</td>
+</tr>
+<tr>
+<td align="center">查看保存版本记录</td>
+<td>scan ‘t1’, {VERSIONS =&gt; 2}</td>
+<td>2</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td>ctrl + enter</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="五、HBase优化"><a href="#五、HBase优化" class="headerlink" title="五、HBase优化"></a>五、HBase优化</h2><p><code>详见HBase性能优化文档</code></p>
+<h2 id="六、Hive和Hbase的整合"><a href="#六、Hive和Hbase的整合" class="headerlink" title="六、Hive和Hbase的整合"></a>六、Hive和Hbase的整合</h2><p>hive和hbase同步<br><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HBaseIntegration">https://cwiki.apache.org/confluence/display/Hive/HBaseIntegration</a></p>
+<h3 id="1、拷贝jar包"><a href="#1、拷贝jar包" class="headerlink" title="1、拷贝jar包"></a>1、拷贝jar包</h3><p>把hive-hbase-handler-1.2.1.jar  cp到hbase/lib 下<br>​    同时把hbase中的所有的jar，cp到hive/lib</p>
+<p><code>注意</code>：</p>
+<blockquote>
+<p>hive-hbase-handler-1.2.1.jar在Hive的lib目录下</p>
+</blockquote>
+<h3 id="2、在hive的配置文件增加属性："><a href="#2、在hive的配置文件增加属性：" class="headerlink" title="2、在hive的配置文件增加属性："></a>2、在hive的配置文件增加属性：</h3><pre class="line-numbers language-xml"><code class="language-xml">  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>hbase.zookeeper.quorum<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">></span></span>node01,node02,node03<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="3、在hive中创建临时表"><a href="#3、在hive中创建临时表" class="headerlink" title="3、在hive中创建临时表"></a>3、在hive中创建临时表</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token punctuation">(</span>注意：需要先在Hbase中创建t_order表，列族为<span class="token keyword">order</span>：<span class="token keyword">create</span> <span class="token string">'t_order'</span> <span class="token string">'order'</span><span class="token punctuation">)</span>
+<span class="token keyword">CREATE</span> EXTERNAL <span class="token keyword">TABLE</span> tmp_tbl<span class="token punctuation">(</span>
+    <span class="token keyword">key</span> string<span class="token punctuation">,</span> 
+    id string<span class="token punctuation">,</span> 
+    user_id string<span class="token punctuation">)</span>  
+STORED <span class="token keyword">BY</span> <span class="token string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>  
+<span class="token keyword">WITH</span> SERDEPROPERTIES <span class="token punctuation">(</span><span class="token string">"hbase.columns.mapping"</span> <span class="token operator">=</span> <span class="token string">":key,order:order_id,order:user_id"</span><span class="token punctuation">)</span>  
+TBLPROPERTIES <span class="token punctuation">(</span><span class="token string">"hbase.table.name"</span> <span class="token operator">=</span> <span class="token string">"t_tbl"</span>，<span class="token string">"hbase.mapred.output.outputtable"</span> <span class="token operator">=</span> <span class="token string">"t_tbl"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+（确保xyz没有在Hbase中存在）
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> hbasetbl<span class="token punctuation">(</span>
+    <span class="token keyword">key</span> <span class="token keyword">int</span><span class="token punctuation">,</span> 
+    name string<span class="token punctuation">,</span> 
+    age string
+<span class="token punctuation">)</span> 
+STORED <span class="token keyword">BY</span> <span class="token string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>
+<span class="token keyword">WITH</span> SERDEPROPERTIES <span class="token punctuation">(</span><span class="token string">"hbase.columns.mapping"</span> <span class="token operator">=</span> <span class="token string">":key,cf1:name,cf1:age"</span><span class="token punctuation">)</span>
+TBLPROPERTIES <span class="token punctuation">(</span><span class="token string">"hbase.table.name"</span> <span class="token operator">=</span> <span class="token string">"xyz"</span><span class="token punctuation">,</span> <span class="token string">"hbase.mapred.output.outputtable"</span> <span class="token operator">=</span> <span class="token string">"xyz"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-sql"><code class="language-sql">案例：
+hbase<span class="token operator">-</span>hive
+<span class="token keyword">CREATE</span> EXTERNAL <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>srv_mid_analysis_order<span class="token punctuation">`</span><span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>rowkey<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>user_id<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>order_id<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>order_price<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>order_status<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>pay_type<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>promoter_id<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>channel<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>completed<span class="token punctuation">`</span> string<span class="token punctuation">,</span> 
+  <span class="token punctuation">`</span>created<span class="token punctuation">`</span> string<span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>accounting_day<span class="token punctuation">`</span> string<span class="token punctuation">)</span>
+<span class="token keyword">ROW</span> FORMAT SERDE 
+  <span class="token string">'org.apache.hadoop.hive.hbase.HBaseSerDe'</span> 
+STORED <span class="token keyword">BY</span> 
+  <span class="token string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span> 
+<span class="token keyword">WITH</span> SERDEPROPERTIES <span class="token punctuation">(</span> 
+  <span class="token string">'hbase.columns.mapping'</span><span class="token operator">=</span>':<span class="token keyword">key</span><span class="token punctuation">,</span>attr:user_id<span class="token comment" spellcheck="true">#b,attr:order_id#b,attr:order_price,attr:order_status#b,attr:pay_type#b,attr:promoter_id#b,attr:channel#b,attr:completed#b,attr:created#b,attr:accounting_day#b', </span>
+  <span class="token string">'serialization.format'</span><span class="token operator">=</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+TBLPROPERTIES <span class="token punctuation">(</span>
+  <span class="token string">'hbase.table.name'</span><span class="token operator">=</span><span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span>
+  <span class="token string">'hbase.mapred.output.outputtable'</span> <span class="token operator">=</span> <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">)</span>
+
+hbase:
+创建命名空间：
+create_namespace <span class="token string">'aries'</span>
+
+:创建表
+<span class="token keyword">create</span> <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'attr'</span>
+
+
+:删除表
+<span class="token keyword">disable</span> <span class="token string">'srv_mid_analysis_order'</span>
+<span class="token keyword">drop</span>  <span class="token string">'srv_mid_analysis_order'</span>
+
+:上传数据
+put <span class="token string">'ns1:t1'</span><span class="token punctuation">,</span> <span class="token string">'r1'</span><span class="token punctuation">,</span> <span class="token string">'c1'</span><span class="token punctuation">,</span> <span class="token string">'value'</span>
+<span class="token number">5e4d5c9938796a0f00ed01b2</span><span class="token punctuation">,</span><span class="token number">5e007fda8430d96242a8578d</span><span class="token punctuation">,</span><span class="token number">299641451</span><span class="token punctuation">,</span><span class="token number">500</span><span class="token punctuation">,</span>completed<span class="token punctuation">,</span>alipay<span class="token punctuation">,</span><span class="token number">200000069</span><span class="token punctuation">,</span>Samsung<span class="token punctuation">,</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">2</span><span class="token operator">/</span><span class="token number">20</span> <span class="token number">0</span>:<span class="token number">04</span><span class="token punctuation">,</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">2</span><span class="token operator">/</span><span class="token number">20</span> <span class="token number">0</span>:<span class="token number">04</span><span class="token punctuation">,</span><span class="token number">20200220</span> 
+
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:user_id'</span><span class="token punctuation">,</span><span class="token string">'5e007fda8430d96242a8578d'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:order_id'</span><span class="token punctuation">,</span><span class="token string">'299641451'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:order_price'</span><span class="token punctuation">,</span><span class="token string">'100'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:order_status'</span><span class="token punctuation">,</span><span class="token string">'completed'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:pay_type'</span><span class="token punctuation">,</span><span class="token string">'alipay'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:promoter_id'</span><span class="token punctuation">,</span><span class="token string">'200000069'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:channel'</span><span class="token punctuation">,</span><span class="token string">'Samsung'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:completed'</span><span class="token punctuation">,</span><span class="token string">'2020/2/20 0:04'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:created'</span><span class="token punctuation">,</span><span class="token string">'2020/2/20 0:04'</span>
+put <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span class="token punctuation">,</span><span class="token string">'attr:accounting_day'</span><span class="token punctuation">,</span><span class="token string">'20200220'</span>
+
+:获取数据
+get <span class="token string">'t1'</span><span class="token punctuation">,</span> <span class="token string">'r1'</span>                      
+get <span class="token string">'aries:srv_mid_analysis_order'</span><span class="token punctuation">,</span><span class="token string">'5e4d5c9938796a0f00ed01b2'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="DDL"><a href="#DDL" class="headerlink" title="DDL"></a>DDL</h1><h2 id="Here-is-some-help-for-this-command"><a href="#Here-is-some-help-for-this-command" class="headerlink" title="Here is some help for this command:"></a>Here is some help for this command:</h2><pre class="line-numbers language-shell"><code class="language-shell">Creates a table.
+ Pass a table name, and a set of column family specifications (at least one), and, optionally, table configuration.Column specification can be a simple string (name), or a dictionary(dictionaries are described below in main help output), necessarily including NAME attribute. 
+Examples:
+
+Create a table with namespace=ns1 and table qualifier=t1
+  hbase> create 'ns1:t1', &#123;NAME => 'f1', VERSIONS => 5&#125;
+
+Create a table with namespace=default and table qualifier=t1
+  hbase> create 't1', &#123;NAME => 'f1'&#125;, &#123;NAME => 'f2'&#125;, &#123;NAME => 'f3'&#125;
+  hbase> # The above in shorthand would be the following:
+  hbase> create 't1', 'f1', 'f2', 'f3'
+  hbase> create 't1', &#123;NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true&#125;
+  hbase> create 't1', &#123;NAME => 'f1', CONFIGURATION => &#123;'hbase.hstore.blockingStoreFiles' => '10'&#125;&#125;
+
+Table configuration options can be put at the end.
+Examples:
+
+  hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+  hbase> create 't1', &#123;NAME => 'f1', VERSIONS => 5&#125;, METADATA => &#123; 'mykey' => 'myvalue' &#125;
+  hbase> # Optionally pre-split the table into NUMREGIONS, using
+  hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+  hbase> create 't1', 'f1', &#123;NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'&#125;
+  hbase> create 't1', 'f1', &#123;NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', CONFIGURATION => &#123;'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'&#125;&#125;
+
+You can also keep around a reference to the created table:
+
+  hbase> t1 = create 't1', 'f1'
+
+Which gives you a reference to the table named 't1', on which you can then call methods.
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>HBase Shell, version 0.98.12.1-hadoop2, rb00ec5da604d64a0bdc7d92452b1e0559f0f5d73, Sun May 17 12:55:03 PDT 2015</p>
+<p>Type ‘help “COMMAND”‘, </p>
+<p>(e.g. ‘help “get”‘ – the quotes are necessary) for help on a specific command.<br>Commands are grouped. </p>
+<p>Type ‘help “COMMAND_GROUP”‘, </p>
+<p>(e.g. ‘help “general”‘) for help on a command group.</p>
+</blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">
+COMMAND GROUPS:
+  Group name: general
+  Commands: status, table_help, version, whoami
+
+  Group name: ddl
+  Commands: alter, alter_async, alter_status, create, describe, disable, disable_all, drop, drop_all, enable, enable_all, exists, get_table, is_disabled, is_enabled, list, show_filters
+
+  Group name: namespace
+  Commands: alter_namespace, create_namespace, describe_namespace, drop_namespace, list_namespace, list_namespace_tables
+
+  Group name: dml
+  Commands: append, count, delete, deleteall, get, get_counter, get_splits, incr, put, scan, truncate, truncate_preserve
+
+  Group name: tools
+  Commands: assign, balance_switch, balancer, catalogjanitor_enabled, catalogjanitor_run, catalogjanitor_switch, close_region, compact, compact_rs, flush, hlog_roll, major_compact, merge_region, move, split, trace, unassign, zk_dump
+
+  Group name: replication
+  Commands: add_peer, disable_peer, disable_table_replication, enable_peer, enable_table_replication, list_peers, list_replicated_tables, remove_peer, set_peer_tableCFs, show_peer_tableCFs
+
+  Group name: snapshots
+  Commands: clone_snapshot, delete_all_snapshot, delete_snapshot, list_snapshots, restore_snapshot, snapshot
+
+  Group name: security
+  Commands: grant, revoke, user_permission
+
+  Group name: visibility labels
+  Commands: add_labels, clear_auths, get_auths, list_labels, set_auths, set_visibility
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre><code>SHELL USAGE:
+Quote all names in HBase Shell such as table and column names.  Commas delimit command parameters.  Type &lt;RETURN&gt; after entering a command to run it.
+Dictionaries of configuration used in the creation and alteration of tables are Ruby Hashes. They look like this:
+
+  &amp;#123;&#39;key1&#39; =&gt; &#39;value1&#39;, &#39;key2&#39; =&gt; &#39;value2&#39;, ...&amp;#125;
+
+and are opened and closed with curley-braces.  Key/values are delimited by the &#39;=&gt;&#39; character combination.  Usually keys are predefined constants such as NAME, VERSIONS, COMPRESSION, etc.  Constants do not need to be quoted.  Type &#39;Object.constants&#39; to see a (messy) list of all constants in the environment.
+
+If you are using binary keys or values and need to enter them in the shell, use double-quote&#39;d hexadecimal representation. For example:
+
+  hbase&gt; get &#39;t1&#39;, &quot;key\x03\x3f\xcd&quot;
+  hbase&gt; get &#39;t1&#39;, &quot;key\003\023\011&quot;
+  hbase&gt; put &#39;t1&#39;, &quot;test\xef\xff&quot;, &#39;f1:&#39;, &quot;\x01\x33\x40&quot;
+
+The HBase shell is the (J)Ruby IRB with the above HBase-specific commands added. For more on the HBase Shell, see http://hbase.apache.org/book.html
+
+</code></pre>
+<pre><code>Here is some help for this command:
+Put a delete cell value at specified table/row/column and optionally
+timestamp coordinates.  Deletes must match the deleted cell&#39;s
+coordinates exactly.  When scanning, a delete cell suppresses older
+versions. To delete a cell from  &#39;t1&#39; at row &#39;r1&#39; under column &#39;c1&#39;
+marked with the time &#39;ts1&#39;, do:
+
+  hbase&gt; delete &#39;ns1:t1&#39;, &#39;r1&#39;, &#39;c1&#39;, ts1
+  hbase&gt; delete &#39;t1&#39;, &#39;r1&#39;, &#39;c1&#39;, ts1
+  hbase&gt; delete &#39;t1&#39;, &#39;r1&#39;, &#39;c1&#39;, ts1, &amp;#123;VISIBILITY=&gt;&#39;PRIVATE|SECRET&#39;&amp;#125;
+
+The same command can also be run on a table reference. Suppose you had a reference
+t to table &#39;t1&#39;, the corresponding command would be:
+
+  hbase&gt; t.delete &#39;r1&#39;, &#39;c1&#39;,  ts1
+  hbase&gt; t.delete &#39;r1&#39;, &#39;c1&#39;,  ts1, &amp;#123;VISIBILITY=&gt;&#39;PRIVATE|SECRET&#39;&amp;#125;
+</code></pre>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>Title:</span><a href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">Sukie</a></p>
+        <p><span>Created:</span>2019-01-15, 00:00:00</p>
+        <p><span>Updated:</span>2020-08-07, 21:07:21</p>
+        <p>
+            <span>Full URL:</span><a class="post-url" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/" title="HBase学习">https://sukie-sun.github.io/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/</a>
+            <span class="copy-path" data-clipboard-text="From https://sukie-sun.github.io/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/　　By Sukie" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+                    HBase性能优化
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">
+                    Sqoop学习
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AF%B9HBase%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84-%E5%9F%BA%E6%9C%AC%E4%BA%86%E8%A7%A3"><span class="toc-number">1.</span> <span class="toc-text">一、对HBase数据库的 基本了解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">1、简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E5%B7%A5%E4%BD%9C%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">2、工作结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.3.</span> <span class="toc-text">3、关系型数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E9%9D%9E%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.4.</span> <span class="toc-text">4、非关系型数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%AF%B9HBase%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%87%8C%E4%BA%86%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">二、对HBase的基本里了解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%BB%84%E6%88%90"><span class="toc-number">2.1.</span> <span class="toc-text">1、数据结构组成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Hbase-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="toc-number">3.</span> <span class="toc-text">三、Hbase 安装部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%80%9A%E8%BF%87hbase-shell%E5%91%BD%E4%BB%A4%E8%BF%9B%E5%85%A5HBase-%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%8E%A5%E5%8F%A3"><span class="toc-number">4.</span> <span class="toc-text">四、通过hbase shell命令进入HBase 命令行接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81HBase%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">五、HBase优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81Hive%E5%92%8CHbase%E7%9A%84%E6%95%B4%E5%90%88"><span class="toc-number">6.</span> <span class="toc-text">六、Hive和Hbase的整合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E6%8B%B7%E8%B4%9Djar%E5%8C%85"><span class="toc-number">6.1.</span> <span class="toc-text">1、拷贝jar包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E5%9C%A8hive%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%A2%9E%E5%8A%A0%E5%B1%9E%E6%80%A7%EF%BC%9A"><span class="toc-number">6.2.</span> <span class="toc-text">2、在hive的配置文件增加属性：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E5%9C%A8hive%E4%B8%AD%E5%88%9B%E5%BB%BA%E4%B8%B4%E6%97%B6%E8%A1%A8"><span class="toc-number">6.3.</span> <span class="toc-text">3、在hive中创建临时表</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DDL"><span class="toc-number"></span> <span class="toc-text">DDL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Here-is-some-help-for-this-command"><span class="toc-number">1.</span> <span class="toc-text">Here is some help for this command:</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
+
+    <script>
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"HBase学习　| Sukie's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+	  <section id="comments" style="margin: 2em; padding: 2em; background: rgba(255, 255, 255, 0.5)">
+    <div id="vcomment" class="comment"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js"></script>
+    <script>
+      new Valine({
+        el: '#vcomment',
+        notify: 'true',
+        verify: 'true',
+        app_id: "qha2YfPRUR6IN1LfnbliYqay-gzGzoHsz",
+        app_key: "b00TckRiHRVQphnJwuFp9isO",
+        placeholder: "Just go go!",
+        avatar: "mp"
+      });
+    </script>
+</section>	  
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="Pre: HBase性能优化">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/" title="Next: Sqoop学习">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/08/hello-world/">Hello World</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Spark(6)/">Spark学习（六）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/Spark(5)/">Spark学习（五）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/Spark(4)/">Spark学习（四）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/Spark(3)/">Spark学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/17/Spark(2)/">Spark学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Spark(1)/">Spark学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/List%E6%96%B9%E6%B3%95/">List方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Map%E6%96%B9%E6%B3%95/">Map方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Set%E6%96%B9%E6%B3%95/">Set方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/String%E6%96%B9%E6%B3%95/">String 方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">面试问题总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95/">数组方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">Scala学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">Storm学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/28/Kafka%E5%AD%A6%E4%B9%A0/">Kafka学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/25/Elasticsearch%E5%AD%A6%E4%B9%A0/">Elasticsearch学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/CDH%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0/">CDH部署操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/Flume%E5%AD%A6%E4%B9%A0/">Flume学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">HBase性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">Sqoop学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84UDF%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/">Hive中常用的UDF函数总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%BC%98%E5%8C%96/">Hive优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/11/Hive%E5%AD%A6%E4%B9%A0/">Hive学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/MapReduce%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">MapReduce源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/07/MapReduce%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">MapReduce案例实践</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/05/MapReduce%E5%AD%A6%E4%B9%A0/">MapReduce学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Zookeeper%E5%AD%A6%E4%B9%A0/">Zookeeper学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Yarn%E5%AD%A6%E4%B9%A0/">YARN的入门学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Hadoop2.X/">Hadoop2.X</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/HDFS%E5%AD%A6%E4%B9%A0/">HDFS学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A02/">Nginx入门学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A01/">Nginx入门学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/30/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%80%9D%E6%83%B3/">大数据思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A03/">常用Linux命令的学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">常用Linux命令的学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">Linux系统数据库MySQL安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/Linux%E7%B3%BB%E7%BB%9FCentOS%206%E5%AE%89%E8%A3%85/">Linux学习之CentOS 6系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85maven%E5%9D%90%E6%A0%87%E4%BE%9D%E8%B5%96/">手动安装maven坐标依赖</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/hexo/">Hexo搭建个人博客</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2020 Sukie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+
+    </div>
+    
+    
+<script src="/js/GithubRepoWidget.js"></script>
+
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var iPad = window.navigator.userAgent.indexOf('iPad');
+      if (iPad > -1) {
+        let bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+        let bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+        $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+      } else if ($(".left-col").css("display") === "none") {
+        $("body").css({
+          "background-image": "url(/background/mobile.jpg)",
+          "background-repeat": "no-repeat",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      } else {
+        var backgroundnum = 5;
+        var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+        $("body").css({
+          "background": backgroundimg,
+          "background-position": "0% 80%",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      }
+    })
+  </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+             github: ".github-widget a", 
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+            
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script src="/js/busuanzi_pure_mini.js"></script>
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?6b4caaf6c3a0542e82c2abbce9da41cc"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"live2d_models/live2d-widget-model-chitose"},"display":{"position":"right","width":250,"height":350,"hOffset":-50,"vOffset":-85},"mobile":{"show":false},"react":{"opacityDefault":0.9,"opacityOnHover":0.3}});</script></body>
+</html>

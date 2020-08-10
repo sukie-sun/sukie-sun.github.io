@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Sukie" />
+
+
+
+<meta name="description" content="Spark的详细学习第二篇章:Apache Spark 主要架构概念介绍及环境搭建。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习（二）">
+<meta property="og:url" content="https://sukie-sun.github.io/2019/02/17/Spark(2)/index.html">
+<meta property="og:site_name" content="Sukie&#39;s Blog">
+<meta property="og:description" content="Spark的详细学习第二篇章:Apache Spark 主要架构概念介绍及环境搭建。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/17/Spark(2)/standalone.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/17/Spark(2)/π.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g09rz47usdj31b40vhq5r.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzbjqjlj310w0qcwgh.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzg6auij31750x4dj9.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzn3fuwj318x0weq60.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g0bt4g8pk2j30h909ajtj.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae0bta21j30mh0fvn7b.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae32q68ij30mz08s3zo.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae6j5tccj30nb0ctq8y.jpg">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g0aeo4szikj30mt0bcgte.jpg">
+<meta property="article:published_time" content="2019-02-17T15:30:00.000Z">
+<meta property="article:modified_time" content="2020-08-08T06:10:17.589Z">
+<meta property="article:author" content="Sukie">
+<meta property="article:tag" content="计算框架">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sukie-sun.github.io/2019/02/17/Spark(2)/standalone.jpg">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Sukie&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Spark学习（二） | Sukie&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src=""></script>
+<script src=""></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.0.0"><link rel="stylesheet" href="/css/prism-a11y-dark.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Sukie</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">你好，新世界、新编程</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>Menu</li>
+                        <li>Tags</li>
+                        
+                        <li>Friends</li>
+                        
+                        
+                        <li>About Me</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/essays/">随笔</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                            <li><a href="/logs/">更新日志</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-6/" rel="tag">CentOS 6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HDFS/" rel="tag">HDFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive/" rel="tag">Hive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/List/" rel="tag">List</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MapReduce/" rel="tag">MapReduce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark-shell/" rel="tag">Spark shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkSql/" rel="tag">SparkSql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkStreaming/" rel="tag">SparkStreaming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkUI/" rel="tag">SparkUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark%E6%A1%86%E6%9E%B6/" rel="tag">Spark框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sqoop/" rel="tag">Sqoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Storm%EF%BC%8C%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">Storm，流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zookeeper/" rel="tag">Zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/" rel="tag">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sparkcore%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" rel="tag">sparkcore应用案例</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yarn/" rel="tag">yarn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag">不同数据源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AA%E4%BA%BA%E5%85%B4%E8%B6%A3/" rel="tag">个人兴趣</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E/" rel="tag">分布式搜索和分析引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">分布式离线计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B/" rel="tag">分而治之</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%81%E8%A3%85RDD/" rel="tag">封装RDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%BF%E6%92%AD/" rel="tag">广播</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F/" rel="tag">消息队列系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%AF%E5%8A%A0%E5%99%A8/" rel="tag">累加器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81/" rel="tag">静态</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">新世界编程</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Sukie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Sukie</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">你好，新世界、新编程</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/essays/">随笔</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                    <li><a href="/logs/">更新日志</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
+</nav>
+      <div class="body-wrap"><article id="post-Spark(2)" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/02/17/Spark(2)/" class="article-date">
+      <time datetime="2019-02-17T15:30:00.000Z" itemprop="datePublished">2019-02-17</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spark学习（二）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Spark/">Spark</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud" style="display: flex; flex-wrap: wrap">  
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li></ul>
+		<span class="post-count">总字数5.1k</span>
+		<span class="post-count">预计阅读23分钟</span>		  
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+		  
+			
+		
+        <h1 id="三、集群搭建及测试"><a href="#三、集群搭建及测试" class="headerlink" title="三、集群搭建及测试"></a>三、集群搭建及测试</h1><h2 id="Standalone"><a href="#Standalone" class="headerlink" title="Standalone"></a><strong>Standalone</strong></h2><h3 id="1、下载安装包、解压"><a href="#1、下载安装包、解压" class="headerlink" title="1、下载安装包、解压"></a>1、下载安装包、解压</h3><p><a target="_blank" rel="noopener" href="https://archive.apache.org/dist/spark/">Spark历史版本下载</a></p>
+<p><code>注意</code>： 与Hadoop的版本保持对应。</p>
+<p>此处使用： <a target="_blank" rel="noopener" href="https://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz">spark-1.6.0-bin-hadoop2.6.tgz</a></p>
+<pre class="line-numbers language-shell"><code class="language-shell">tar -zvxf spark-1.6.0-bin-hadoop2.6.tgz <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="2、改名"><a href="#2、改名" class="headerlink" title="2、改名"></a>2、改名</h3><pre><code>mv spark-1.6.0-bin-hadoop2.6 spark-1.6.0</code></pre>
+<h3 id="3、修改slaves"><a href="#3、修改slaves" class="headerlink" title="3、修改slaves"></a>3、修改slaves</h3><p>进入安装包的conf目录下，修改slaves.template文件，添加从节点。并保存。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">#备份
+cp slaves.template slaves
+vim slaves<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>常驻进程：master、worker</p>
+</blockquote>
+<p>配置slaves（与worker对应）</p>
+<pre class="line-numbers language-sh"><code class="language-sh">node2
+node3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="4、修改-spark-env-sh"><a href="#4、修改-spark-env-sh" class="headerlink" title="4、修改 spark-env.sh"></a>4、修改 spark-env.sh</h3><p>改名（备份）</p>
+<pre><code> cp spark-env.sh.template spark-env.sh</code></pre>
+<p>配置spark-env.sh（注意与虚拟机实际配置对应）</p>
+<pre class="line-numbers language-sh"><code class="language-sh">#locally
+#cluster
+#YARN client
+#standalone deploy
+
+#配置 java_home 路径
+JAVA_HOME=/usr/soft/jdk1.8.0_191
+#master 的 ip
+SPARK_MASTER_IP=192.168.198.128
+#提交任务的端口，默认是 7077
+SPARK_MASTER_PORT=7077
+#每个 worker 从节点能够支配的 core 的个数
+SPARK_WORKER_CORES=1
+#每个 worker 从节点能够支配的内存数
+SPARK_WORKER_MEMORY=1024m
+#配置yarn
+HADOOP_CONF_DIR=/usr/soft/hadoop-2.6.5/etc/hadoop<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="5、其他节点"><a href="#5、其他节点" class="headerlink" title="5、其他节点"></a>5、其他节点</h3><p>将spark解压文件发送到其他两个节点</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node00 soft]# scp -r  spark-1.6.0-bin-hadoop2.6 node2:`pwd`
+[root@node00 soft]# scp -r  spark-1.6.0-bin-hadoop2.6 node3:`pwd`<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>6、配置环境变量（可不配，因为bin路径中包含start-all ，该命令与hdfs中的命令会冲突）</p>
+<h3 id="7、启动：-node1"><a href="#7、启动：-node1" class="headerlink" title="7、启动：(node1)"></a>7、启动：(node1)</h3><p>在spark的解压文件的/sbin 目录下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./start-all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>停止</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./stop-all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>显示：</p>
+<p>[root@node00 sbin]# ./start-all.sh<br>starting org.apache.spark.deploy.master.Master, logging to /usr/soft/spark-1.6.0-bin-hadoop2.6/logs/spark-root-org.apache.spark.deploymaster.Master-1-node00.out</p>
+<p>node01: starting org.apache.spark.deploy.worker.Worker, logging to /usr/soft/spark-1.6.0-bin-hadoop2.6/logs/spark-root-org.apache.spar.deploy.worker.Worker-1-node01.out</p>
+<p>node02: starting org.apache.spark.deploy.worker.Worker, logging to /usr/soft/spark-1.6.0-bin-hadoop2.6/logs/spark-root-org.apache.spar.deploy.worker.Worker-1-node02.out</p>
+</blockquote>
+<p>查看三台节点的进程</p>
+<p>node00（命令启动的节点）</p>
+<blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node00 sbin]# jps<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2343 Master<br>2408 Jps</p>
+</blockquote>
+<p>nose01(配置的从节点)</p>
+<blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node01 ~]# jps<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2292 Jps<br>2229 Worker</p>
+</blockquote>
+<p>node02(从节点)</p>
+<blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node02 ~]# jps<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>6216 Worker<br>6266 Jps</p>
+</blockquote>
+<p><code>注意：</code></p>
+<blockquote>
+<p>Worker在这里不是真正干活的进程，而是相当于Yarn中的NM。</p>
+<p>它是负责管理所在节点资源的、向Master汇报所在节点的信息（如核数、内存数）</p>
+<p>Master： 监控任务、分发任务、回收计算结果 </p>
+</blockquote>
+<h3 id="8、搭建客户端"><a href="#8、搭建客户端" class="headerlink" title="8、搭建客户端"></a>8、搭建客户端</h3><ul>
+<li>将 spark 安装包原封不动的拷贝到一个新的节点上，然后，在新的节点上提交任务即可。</li>
+</ul>
+<p><code>注意：</code><strong>8080</strong> 是Spark WEBUI页面的端口 ； <strong>7077</strong> 是Spark任务提交的端口</p>
+<p>web页面访问：ip:8080</p>
+<ul>
+<li>修改master的WEBUI端口，</li>
+</ul>
+<p>方法一（永久）：通过修改start-master.sh 文件（在/sbin目录下）</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim  start-master.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>找到文件内容如下的部分：</p>
+<pre><code>if [ &quot;$SPARK_MASTER_WEBUI_PORT&quot; = &quot;&quot; ]; then
+  SPARK_MASTER_WEBUI_PORT=8080
+fi</code></pre>
+<p>方法二：在 Master 节点上导入临时环境变量，只作用于当前进程，重启就无效了。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node00 sbin]# export SPARK_MASTER_WEBUI_PORT=8080<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>删除临时变量</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node00 sbin]# export -n SPARK_MASTER_WEBUI_PORT<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<div align="center"><img src="/2019/02/17/Spark(2)/standalone.jpg" align="middle" alt="SparkWebUI"></div>
+
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><h3 id="1、步骤"><a href="#1、步骤" class="headerlink" title="1、步骤"></a>1、步骤</h3><p><strong>1。2。3。4。5。8。</strong>同standalone</p>
+<p>不用Master和Worker，所以不用第7步，我们使用的是yarn中的RM和NM</p>
+<h3 id="2、配置"><a href="#2、配置" class="headerlink" title="2、配置"></a>2、配置</h3><p>添加 HADOOP_CONF_DIR配置</p>
+<p><code>（在使用Yarn时，就能找到关于hdfs的所有配置，其中就包括IP 和Port）</code></p>
+<p>方式一：</p>
+<p>编辑spark-env.sh文件</p>
+<p>方式二：</p>
+<pre class="line-numbers language-shell"><code class="language-shell"> export HADOOP_CONF_DIR=/usr/soft/hadoop-2.6.5/etc/hadoop<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="测试：求π值"><a href="#测试：求π值" class="headerlink" title="测试：求π值"></a>测试：求π值</h2><p>Pi案例：</p>
+<div align="center"><img src="/2019/02/17/Spark(2)/π.jpg" align="middle" alt="SparkWebUI"></div>
+
+<h3 id="源码案例："><a href="#源码案例：" class="headerlink" title="源码案例："></a><strong>源码案例：</strong></h3><p>路径：在spark解压路径spark-1.6.0-bin-hadoop2.6中</p>
+<p>spark-1.6.0-bin-hadoop2.6/examples/src/main/scala/org/apache/spark/examples/SparkPi.scala</p>
+<p>原理：随机产生无穷多个点落入如上图形中，求落入圆中的概率：<br>$$<br>概率   p = π<em>r</em>r/(2r*2r)=π<br>$$</p>
+<pre class="line-numbers language-scala"><code class="language-scala"><span class="token comment" spellcheck="true">/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="token comment" spellcheck="true">// scalastyle:off println</span>
+<span class="token keyword">package</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>examples
+
+<span class="token keyword">import</span> scala<span class="token punctuation">.</span>math<span class="token punctuation">.</span>random
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>_
+
+<span class="token comment" spellcheck="true">/** Computes an approximation to pi */</span>
+<span class="token keyword">object</span> SparkPi <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">def</span> main<span class="token punctuation">(</span>args<span class="token operator">:</span> Array<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">val</span> conf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppName<span class="token punctuation">(</span><span class="token string">"Spark Pi"</span><span class="token punctuation">)</span>
+    <span class="token keyword">val</span> spark <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span>conf<span class="token punctuation">)</span>
+
+   <span class="token comment" spellcheck="true">// args 运行时传入的参数   slices 分区数量 (决定task数量)</span>
+    <span class="token keyword">val</span> slices <span class="token operator">=</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> args<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span>toInt <span class="token keyword">else</span> <span class="token number">2</span>
+
+   <span class="token comment" spellcheck="true">//MaxValue 一个无限大的数   n   随机产生的十万个的数</span>
+    <span class="token keyword">val</span> n <span class="token operator">=</span> math<span class="token punctuation">.</span>min<span class="token punctuation">(</span><span class="token number">100000L</span> <span class="token operator">*</span> slices<span class="token punctuation">,</span> <span class="token builtin">Int</span><span class="token punctuation">.</span>MaxValue<span class="token punctuation">)</span><span class="token punctuation">.</span>toInt <span class="token comment" spellcheck="true">// avoid overflow</span>
+
+ <span class="token comment" spellcheck="true">//parallelize可以获得RDD  ，将1~n个数字放到RDD中</span>
+ <span class="token comment" spellcheck="true">//val count :[Int] = spark.parallelize(1 until n, slices)     </span>
+    <span class="token keyword">val</span> count <span class="token operator">=</span> spark<span class="token punctuation">.</span>parallelize<span class="token punctuation">(</span><span class="token number">1</span> until n<span class="token punctuation">,</span> slices<span class="token punctuation">)</span><span class="token punctuation">.</span>map <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> i <span class="token keyword">=></span>
+      <span class="token keyword">val</span> x <span class="token operator">=</span> random <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span>
+      <span class="token keyword">val</span> y <span class="token operator">=</span> random <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>x<span class="token operator">*</span>x <span class="token operator">+</span> y<span class="token operator">*</span>y <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token number">1</span> <span class="token keyword">else</span> <span class="token number">0</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">.</span>reduce<span class="token punctuation">(</span>_ <span class="token operator">+</span> _<span class="token punctuation">)</span>
+
+    println<span class="token punctuation">(</span><span class="token string">"Pi is roughly "</span> <span class="token operator">+</span> <span class="token number">4.0</span> <span class="token operator">*</span> count <span class="token operator">/</span> n<span class="token punctuation">)</span>
+    spark<span class="token punctuation">.</span>stop<span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// scalastyle:on println</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>所需使用的jar包：spark-examples-1.6.0-hadoop2.6.0.jar</p>
+<p>位置：解压目录的lib路径下</p>
+<p>在任一节点的/bin路径下上执行如下命令：（node1）</p>
+<h3 id="Standalone-提交命令"><a href="#Standalone-提交命令" class="headerlink" title="Standalone 提交命令:"></a><strong>Standalone</strong> 提交命令:</h3><pre class="line-numbers language-shell"><code class="language-shell">./spark-submit    #提交spark 
+--master spark://node3:7077   #spark主节点的地址和端口 
+--class org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar 100   # 指明运行的jar包+路径 和 jar包中执行的包名+类名 100 为传入的参数
+
+./spark-submit --master spark://node3:7077 --class org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar 100  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><code>显示：</code></p>
+<p>提交命令的节点（node1主节点）</p>
+<p>会显示执行日志、运算结果</p>
+<pre class="line-numbers language-shell"><code class="language-shell">19/02/13 23:27:31 INFO scheduler.TaskSetManager: Starting task 999.0 in stage 0.0 (TID 999, node02, partition 999,PROCESS_LOCAL, 2158 bytes)
+19/02/13 23:27:31 INFO scheduler.TaskSetManager: Finished task 995.0 in stage 0.0 (TID 995) in 68 ms on node02 (996/1000)
+19/02/13 23:27:31 INFO scheduler.TaskSetManager: Finished task 997.0 in stage 0.0 (TID 997) in 131 ms on node01 (997/1000)
+19/02/13 23:27:31 INFO scheduler.TaskSetManager: Finished task 996.0 in stage 0.0 (TID 996) in 147 ms on node01 (998/1000)
+19/02/13 23:27:31 INFO scheduler.TaskSetManager: Finished task 999.0 in stage 0.0 (TID 999) in 112 ms on node02 (999/1000)
+19/02/13 23:27:31 INFO scheduler.TaskSetManager: Finished task 998.0 in stage 0.0 (TID 998) in 115 ms on node02 (1000/1000)
+19/02/13 23:27:31 INFO scheduler.DAGScheduler: ResultStage 0 (reduce at SparkPi.scala:36) finished in 79.202 s
+19/02/13 23:27:31 INFO scheduler.TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool 
+19/02/13 23:27:31 INFO scheduler.DAGScheduler: Job 0 finished: reduce at SparkPi.scala:36, took 82.641779 s
+
+Pi is roughly 3.14148344      #运算结果
+
+19/02/13 23:27:32 INFO handler.ContextHandler: stopped o.s.j.s.ServletContextHandler&#123;/metrics/json,null&#125;
+19/02/13 23:27:32 INFO handler.ContextHandler: stopped o.s.j.s.ServletContextHandler&#123;/stages/stage/kill,null&#125;
+19/02/13 23:27:32 INFO handler.ContextHandler: stopped o.s.j.s.ServletContextHandler&#123;/api,null&#125;
+。。。。。。。。。。。。。。。。。。。。。。。。。
+19/02/13 23:27:32 INFO handler.ContextHandler: stopped o.s.j.s.ServletContextHandler&#123;/jobs/json,null&#125;
+19/02/13 23:27:32 INFO handler.ContextHandler: stopped o.s.j.s.ServletContextHandler&#123;/jobs,null&#125;
+19/02/13 23:27:32 INFO ui.SparkUI: Stopped Spark web UI at http://192.168.198.128:4040
+19/02/13 23:27:32 INFO cluster.SparkDeploySchedulerBackend: Shutting down all executors
+19/02/13 23:27:32 INFO cluster.SparkDeploySchedulerBackend: Asking each executor to shut down
+19/02/13 23:27:32 INFO spark.MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+19/02/13 23:27:33 INFO storage.MemoryStore: MemoryStore cleared
+19/02/13 23:27:33 INFO storage.BlockManager: BlockManager stopped
+19/02/13 23:27:33 INFO storage.BlockManagerMaster: BlockManagerMaster stopped
+19/02/13 23:27:33 INFO scheduler.OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+19/02/13 23:27:33 INFO remote.RemoteActorRefProvider$RemotingTerminator: Shutting down remote daemon.
+19/02/13 23:27:33 INFO remote.RemoteActorRefProvider$RemotingTerminator: Remote daemon shut down; proceeding with flushing remote transports.
+19/02/13 23:27:34 INFO spark.SparkContext: Successfully stopped SparkContext
+19/02/13 23:27:34 INFO util.ShutdownHookManager: Shutdown hook called
+19/02/13 23:27:34 INFO util.ShutdownHookManager: Deleting directory /tmp/spark-f7c2019e-10f4-4b31-9308-5a94603de113
+19/02/13 23:27:35 INFO util.ShutdownHookManager: Deleting directory /tmp/spark-f7c2019e-10f4-4b31-9308-5a94603de113/httpd-39b8b4b3-9b80-4247-9c7e-ed6bd2dc389f
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在命令执行期间：</p>
+<p>在三个节点敲如下命令：jps，会显示：</p>
+<p>node1：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node1 ~]# jps
+4903 Jps
+2343 Master
+4764 SparkSubmit  #代表是提交spark的节点 (与主从无关)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>node2和node3：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node2 bin]# jps
+2229 Worker
+5096 CoarseGrainedExecutorBackend    #代表是干活的节点 （仅为从节点进程）
+5167 Jps<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如果提交命令的节点是从节点（node2），则在该节点上会显示执行日志、运算结果</p>
+<p>则在提交过程中，敲命令：jps  该节点会显示</p>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@node2 ~]# jps
+5298 CoarseGrainedExecutorBackend  #代表是干活的节点 （仅为从节点进程）
+2229 Worker
+5323 Jps
+5213 SparkSubmit #代表是提交spark的节点 (与主从无关)
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<h3 id="YARN-提交命令："><a href="#YARN-提交命令：" class="headerlink" title="YARN 提交命令："></a><strong>YARN</strong> 提交命令：</h3><p>基于Hadoop ：</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">NN</th>
+<th align="center">DN</th>
+<th align="center">JN</th>
+<th align="center">ZKFC</th>
+<th align="center">ZK</th>
+<th align="center">RM</th>
+<th align="center">NM</th>
+<th align="center">Master</th>
+<th align="center">slave</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">node1</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">node2</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">node3</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>启动zookeeper ：（3台）</p>
+<pre class="line-numbers language-shell"><code class="language-shell">zkServer.sh start<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>启动hdfs ：（1台）</p>
+<pre class="line-numbers language-shell"><code class="language-shell">start-all.sh     <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>相当于：Instead use start-dfs.sh and start-yarn.sh</p>
+<p>启动resourcemanager ：(在RM的主节点上启动 ：1台)</p>
+<pre class="line-numbers language-shell"><code class="language-shell">yarn-daemon.sh start resourcemanager<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>在任一节点的/bin路径下执行：（node01）</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn #HADOOP_CONF_DIR配置使得在使用Yarn时能找到hdfs的所有配置，其中就有IP 和Port
+--class org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar 100
+
+./spark-submit --master yarn --class org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar 1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>显示</code></p>
+<blockquote>
+<ul>
+<li><p>执行日志、计算结果会在执行提交命令的节点上显示</p>
+</li>
+<li><p>在命令提交过程中在三台节点上敲命令：jps 会显示</p>
+</li>
+</ul>
+<p>node02：</p>
+<p>[root@node02 ~]# jps<br>3406 DataNode<br>3491 JournalNode<br>1681 QuorumPeerMain<br>4133 CoarseGrainedExecutorBackend    # 真正干活的进程<br>4092 ExecutorLauncher     # 启动executor<br>3585 NodeManager<br>3942 SparkSubmit     #提交spark的进程<br>4217 Jps</p>
+</blockquote>
+<h1 id="四、Standalone-模式两种提交任务方式"><a href="#四、Standalone-模式两种提交任务方式" class="headerlink" title="四、Standalone 模式两种提交任务方式"></a>四、Standalone 模式两种提交任务方式</h1><h2 id="1、Standalone-client-提交任务方式"><a href="#1、Standalone-client-提交任务方式" class="headerlink" title="1、Standalone-client 提交任务方式"></a>1、Standalone-client 提交任务方式</h2><h3 id="1-命令提交"><a href="#1-命令提交" class="headerlink" title="(1)命令提交"></a>(1)命令提交</h3><ul>
+<li>在/sbin路径下：</li>
+</ul>
+<pre class="line-numbers language-shell"><code class="language-shell">./start-all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>提交spark</li>
+</ul>
+<p>方式一：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master spark://node00:7077
+--class org.apache.spark.examples.SparkPi
+../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>方式二：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master spark://node1:7077
+--deploy-mode client
+--class org.apache.spark.examples.SparkPi
+../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-执行原理图"><a href="#2-执行原理图" class="headerlink" title="(2)执行原理图"></a>(2)执行原理图</h3><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g09rz47usdj31b40vhq5r.jpg"></p>
+<h3 id="3-执行流程"><a href="#3-执行流程" class="headerlink" title="(3)执行流程"></a>(3)执行流程</h3><blockquote>
+<ol>
+<li>client 模式提交任务后，会在客户端启动 Driver 进程。</li>
+<li>Driver 会向 Master 申请启动 Application 启动的资源。</li>
+<li>资源申请成功，Driver 端将 task 发送到 worker 端执行。</li>
+<li>worker 将 task 执行结果返回到 Driver 端</li>
+</ol>
+</blockquote>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="(4)总结"></a>(4)总结</h3><blockquote>
+<ul>
+<li><p>client 模式适用于测试调试程序。</p>
+</li>
+<li><p>Driver 进程是在客户端启动的，这里的客户端就是指提交应用程序的当前节点。</p>
+</li>
+<li><p>在 Driver 端可以看到 task 执行的情况。生产环境下不能使用 client 模式，</p>
+</li>
+</ul>
+<p><code>是因为</code>：</p>
+<p>假设要提交 100 个 application 到集群运行，Driver 每次都会在client 端启动，那么就会导致客户端 100 次网卡流量暴增的问题。</p>
+</blockquote>
+<h2 id="2、Standalone-cluster-提交任务方式"><a href="#2、Standalone-cluster-提交任务方式" class="headerlink" title="2、Standalone-cluster 提交任务方式"></a>2、Standalone-cluster 提交任务方式</h2><h3 id="（1）命令提交"><a href="#（1）命令提交" class="headerlink" title="（1）命令提交"></a>（1）命令提交</h3><ul>
+<li>在/sbin路径下：</li>
+</ul>
+<pre class="line-numbers language-shell"><code class="language-shell">./start-all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>提交spark</li>
+</ul>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master spark://node00:7077
+--deploy-mode cluster
+--class org.apache.spark.examples.SparkPi
+../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>注意：</code></p>
+<blockquote>
+<p>Standalone-cluster 提交方式，应用程序使用的所有 jar 包和文件，必须保证所有的 worker 节点都要有，因为此种方式，spark 不会自动上传jar包。</p>
+<p>Standalone-client 和yarn 模式会在提交命令的时候自动uploading  实现jar包共享，</p>
+<p>解决方式：</p>
+<p>1、将所有的依赖包和文件各放一份在 worker 节点上。</p>
+<p>2、将所有的依赖包和文件打到同一个包中，然后放在 hdfs 上。(路径需指定为hdfs上的路径)</p>
+<blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master spark://node00:7077
+--deploy-mode cluster
+--class org.apache.spark.examples.SparkPi
+hdfs://Sunrise/lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+</blockquote>
+<h3 id="（2）执行原理图"><a href="#（2）执行原理图" class="headerlink" title="（2）执行原理图"></a>（2）执行原理图</h3><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzbjqjlj310w0qcwgh.jpg"></p>
+<h3 id="（3）执行流程"><a href="#（3）执行流程" class="headerlink" title="（3）执行流程"></a>（3）执行流程</h3><blockquote>
+<ol>
+<li>cluster 模式提交应用程序后，会向 Master 请求启动 Driver.</li>
+<li>Master 接受请求，随机在集群一台节点启动 Driver 进程。</li>
+<li>Driver 启动后为当前的应用程序申请资源。</li>
+<li>Driver 端发送 task 到 worker 节点上执行。</li>
+<li>worker 将执行情况和执行结果返回给 Driver 端。</li>
+</ol>
+</blockquote>
+<h3 id="（4）总结"><a href="#（4）总结" class="headerlink" title="（4）总结"></a>（4）总结</h3><blockquote>
+<p>Driver 进程是在集群某一台 Worker 上启动的，在客户端是无法查看 task 的执行情况的。假设要提交 100<br>个 application 到集群运行,每次 Driver 会随机在集群中某一台 Worker 上启动，那么这 100 次网卡流量暴<br>增的问题就散布在集群上</p>
+</blockquote>
+<h2 id="总结-Standalone"><a href="#总结-Standalone" class="headerlink" title="总结 Standalone"></a>总结 Standalone</h2><p>Standalone  两种方式提交任务，Driver  与集群的通信包括：</p>
+<blockquote>
+<ol>
+<li>Driver 负责应用程序资源的申请</li>
+<li>任务的分发。</li>
+<li>结果的回收。</li>
+<li>监控 task 执行情况。</li>
+</ol>
+</blockquote>
+<h1 id="五、Yarn-模式两种提交任务方式"><a href="#五、Yarn-模式两种提交任务方式" class="headerlink" title="五、Yarn  模式两种提交任务方式"></a>五、Yarn  模式两种提交任务方式</h1><h2 id="1、yarn-client-提交任务方式"><a href="#1、yarn-client-提交任务方式" class="headerlink" title="1、yarn-client 提交任务方式"></a>1、yarn-client 提交任务方式</h2><h3 id="（1）命令提交-1"><a href="#（1）命令提交-1" class="headerlink" title="（1）命令提交"></a>（1）命令提交</h3><ul>
+<li>提交spark</li>
+</ul>
+<p>方式一：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn
+--class org.apache.spark.examples.SparkPi 
+../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+100<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>方式二：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn–client
+--class org.apache.spark.examples.SparkPi 
+../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+100<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>方式三：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn
+--deploy-mode client
+--class
+org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+100<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="（2）执行原理图-1"><a href="#（2）执行原理图-1" class="headerlink" title="（2）执行原理图"></a>（2）执行原理图</h3><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzg6auij31750x4dj9.jpg"></p>
+<h3 id="（3）执行流程-1"><a href="#（3）执行流程-1" class="headerlink" title="（3）执行流程"></a>（3）执行流程</h3><blockquote>
+<ol>
+<li>客户端提交一个 Application，在客户端启动一个 Driver 进程。</li>
+<li>应用程序启动后会向 RS(ResourceManager)发送请求，启动AM(ApplicationMaster)的资源。</li>
+<li>RS 收到请求，随机选择一台 NM(NodeManager)启动 AM。这里的 NM 相当于 Standalone 中的Worker 节点。</li>
+<li>AM启动后，会向RS请求一批container资源，用于启动Executor.</li>
+<li>RS 会找到一批 NM 返回给 AM,用于启动 Executor。</li>
+<li>AM 会向 NM 发送命令启动 Executor。</li>
+<li>Executor 启动后，会反向注册给 Driver，Driver 发送 task 到Executor,执行情况和结果返回给 Driver 端。</li>
+</ol>
+</blockquote>
+<h3 id="（4）总结-1"><a href="#（4）总结-1" class="headerlink" title="（4）总结"></a>（4）总结</h3><blockquote>
+<p>Yarn-client 模式同样是适用于测试，因为 Driver 运行在本地，Driver会与 yarn 集群中的 Executor 进行大量的通信，会造成客户机网卡流量的大量增加.</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>ApplicationMaster  的作用：</li>
+</ul>
+<ol>
+<li>为当前的 Application 申请资源</li>
+<li>给 NodeManager 发送消息启动 Executor。</li>
+</ol>
+<ul>
+<li>注意：</li>
+</ul>
+<p>ApplicationMaster 有 launchExecutor 和申请资源的功能，并没有作业调度的功能</p>
+</blockquote>
+<h2 id="2、yarn-cluster-提交任务方式"><a href="#2、yarn-cluster-提交任务方式" class="headerlink" title="2、yarn-cluster 提交任务方式"></a>2、yarn-cluster 提交任务方式</h2><h3 id="（1）命令提交-2"><a href="#（1）命令提交-2" class="headerlink" title="（1）命令提交"></a>（1）命令提交</h3><ul>
+<li>提交spark</li>
+</ul>
+<p>方式一：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn
+--deploy-mode cluster
+--class
+org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>方式二:</p>
+<pre class="line-numbers language-shell"><code class="language-shell">./spark-submit
+--master yarn-cluster
+--class
+org.apache.spark.examples.SparkPi ../lib/spark-examples-1.6.0-hadoop2.6.0.jar
+1000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="（2）执行原理图-2"><a href="#（2）执行原理图-2" class="headerlink" title="（2）执行原理图"></a>（2）执行原理图</h3><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g09rzn3fuwj318x0weq60.jpg"></p>
+<h3 id="（3）执行流程-2"><a href="#（3）执行流程-2" class="headerlink" title="（3）执行流程"></a>（3）执行流程</h3><blockquote>
+<ol>
+<li>客户机提交 Application 应用程序，发送请求到RS(ResourceManager),请求启动AM(ApplicationMaster)。</li>
+<li>RS 收到请求后随机在一台 NM(NodeManager)上启动 AM（相当于 Driver 端）。</li>
+<li>AM 启动，AM 发送请求到 RS，请求一批 container 用于启动Excutor。</li>
+<li>RS 返回一批 NM 节点给 AM。</li>
+<li>AM 连接到 NM,发送请求到 NM 启动 Excutor。</li>
+<li>Excutor 反向注册到 AM 所在的节点的 Driver。Driver 发送 task到 Excutor。</li>
+</ol>
+</blockquote>
+<h3 id="（4）总结-2"><a href="#（4）总结-2" class="headerlink" title="（4）总结"></a>（4）总结</h3><blockquote>
+<p>Yarn-Cluster 主要用于生产环境中，</p>
+<p>因为 Driver 运行在 Yarn 集群中某一台 nodeManager 中，每次提交任务的 Driver 所在的机器都是<br>随机的，不会产生某一台机器网卡流量激增的现象，</p>
+<p>缺点是任务提交后不能看到日志。只能通过 yarn 查看日志。</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>ApplicationMaster  的作用：</li>
+</ul>
+<ol>
+<li>为当前的 Application 申请资源</li>
+<li>给 NodeManger 发送消息启动 Excutor。</li>
+<li>任务调度。</li>
+</ol>
+<ul>
+<li>停止集群任务命令：yarn application -kill applicationID</li>
+</ul>
+</blockquote>
+<h2 id="总结yarn"><a href="#总结yarn" class="headerlink" title="总结yarn"></a>总结yarn</h2><h1 id="六、术语解释"><a href="#六、术语解释" class="headerlink" title="六、术语解释"></a>六、术语解释</h1><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g0bt4g8pk2j30h909ajtj.jpg"></p>
+<h1 id="七、宽窄依赖"><a href="#七、宽窄依赖" class="headerlink" title="七、宽窄依赖"></a>七、宽窄依赖</h1><h2 id="1、窄依赖"><a href="#1、窄依赖" class="headerlink" title="1、窄依赖"></a>1、窄依赖</h2><p>父RDD的一个partition对应子RDD**<code>一个</code>**partition</p>
+<p>父RDD的多个partition对应子RDD**<code>一个</code>**partition</p>
+<p>不会产生shuffle</p>
+<pre><code>map
+flatmap
+filter
+union</code></pre>
+<h2 id="2、宽依赖"><a href="#2、宽依赖" class="headerlink" title="2、宽依赖"></a>2、宽依赖</h2><p>父RDD的一个partition对应子RDD**<code>多个</code>**partition</p>
+<p>会产生shuffle</p>
+<p>会划分stage</p>
+<pre><code>reduceByKey
+join
+groupBy</code></pre>
+<h1 id="八、stage"><a href="#八、stage" class="headerlink" title="八、stage"></a>八、stage</h1><h2 id="0、概念"><a href="#0、概念" class="headerlink" title="0、概念"></a>0、概念</h2><p>（1）Spark任务会根据RDD之间的依赖关系，形成一个DAG有向无环图，DAG会提交给DAGScheduler，DAGScheduler会把DAG划分相互依赖的多个stage，划分依据就是RDD之间的宽窄依赖关系：遇到宽依赖就划分stage</p>
+<p>（2）stage内有一组并行的task组成，这些task将以taskSet的格式提交给TaskScheduler运行</p>
+<p>（2）task运行时，stage之间的关系可能并行，也可能串行</p>
+<h2 id="1、stage-切割规则"><a href="#1、stage-切割规则" class="headerlink" title="1、stage 切割规则"></a>1、stage 切割规则</h2><p>切割规则：从后往前，遇到宽依赖就切割 stage。</p>
+<p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae0bta21j30mh0fvn7b.jpg"></p>
+<h2 id="2、stage-计算模式"><a href="#2、stage-计算模式" class="headerlink" title="2、stage 计算模式"></a>2、stage 计算模式</h2><p>pipeline 管道计算模式,pipeline 只是一种计算思想、模式。</p>
+<p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae32q68ij30mz08s3zo.jpg"></p>
+<blockquote>
+<ul>
+<li>数据在内存中流转</li>
+<li>数据一直在管道里面什么时候数据会落地？</li>
+</ul>
+<ol>
+<li>对 RDD 进行持久化(cache、persisit)。</li>
+<li>shuffle write 的时候。</li>
+</ol>
+</blockquote>
+<blockquote>
+<ul>
+<li>什么决定task数</li>
+</ul>
+<p>Stage 的 的 task  并行度是由 stage 的最后一个RDD的分区数来决定的 （partition分区数决定task数）</p>
+<p>同一个stage中的task计算逻辑可能不同</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>如何改变 RDD  的分区数？</li>
+</ul>
+<p>宽依赖可改分区数；（因为此时数据已落地到磁盘）</p>
+<p>textFile(“  ”,5)</p>
+<p>reduceByKey(_ +_ , 5)</p>
+<p>GroupByKey(4)</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>测试验证 pipeline 计算模式</li>
+</ul>
+<p><code>注意：</code>textFile(“./wc.txt”)是通过文件获得RDD，parallelize()是通过转换参数内容获得RDD</p>
+<pre class="line-numbers language-scala"><code class="language-scala"><span class="token keyword">val</span> conf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token punctuation">)</span>
+conf<span class="token punctuation">.</span>setMaster<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppName<span class="token punctuation">(</span><span class="token string">"pipeline"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">val</span> sc <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span>conf<span class="token punctuation">)</span>
+<span class="token keyword">val</span> rdd <span class="token operator">=</span> sc<span class="token punctuation">.</span>parallelize<span class="token punctuation">(</span>Array<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> rdd1 <span class="token operator">=</span> rdd<span class="token punctuation">.</span>map <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> x <span class="token keyword">=></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      println<span class="token punctuation">(</span><span class="token string">"map--------"</span><span class="token operator">+</span>x<span class="token punctuation">)</span>
+       x
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token keyword">val</span> rdd2 <span class="token operator">=</span> rdd1<span class="token punctuation">.</span>filter <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> x <span class="token keyword">=></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+println<span class="token punctuation">(</span><span class="token string">"fliter********"</span><span class="token operator">+</span>x<span class="token punctuation">)</span>
+<span class="token boolean">true</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+rdd2<span class="token punctuation">.</span>collect<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>foreach<span class="token punctuation">(</span>print<span class="token operator">+</span><span class="token string">","</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//1,2,3,4</span>
+sc<span class="token punctuation">.</span>stop<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>显示：</code></p>
+<p>map——–1</p>
+<p>fliter**<strong>**</strong>1</p>
+<p>map——–2</p>
+<p>fliter**<strong>**</strong>2</p>
+<p>map——–3</p>
+<p>fliter**<strong>**</strong>3</p>
+<p>map——–4</p>
+<p>fliter**<strong>**</strong>4</p>
+</blockquote>
+<h1 id="九、Spark-资源调度和任务调度"><a href="#九、Spark-资源调度和任务调度" class="headerlink" title="九、Spark  资源调度和任务调度"></a>九、Spark  资源调度和任务调度</h1><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g0ae6j5tccj30nb0ctq8y.jpg"></p>
+<h2 id="1、概念解释"><a href="#1、概念解释" class="headerlink" title="1、概念解释"></a>1、概念解释</h2><ul>
+<li><strong>DAGScheduler</strong>是任务调度的高层调度器，是一个对象</li>
+</ul>
+<blockquote>
+<p> DAGScheduler 的主要作用就是</p>
+<p>将DAG 根据 RDD 之间的宽窄依赖关系划分为一个个的 Stage，然后将这些Stage 以 TaskSet 的形式提交给 TaskScheduler</p>
+</blockquote>
+<ul>
+<li><p><strong>TaskScheduler</strong> 是任务调度的低层调度器</p>
+</li>
+<li><p><strong>TaskSet</strong> 其实就是一个集合，里面封装的就是一个个的 task 任务,也就是 stage 中的并行度 task 任务</p>
+</li>
+</ul>
+<p>Application→Job→Stage→Task</p>
+<ul>
+<li><strong>Spark推测执行机制</strong></li>
+</ul>
+<blockquote>
+<p>如果有运行缓慢的task,那么TaskScheduler就会启动一个新的task（在不同节点的excutor上）来执行相同的处理逻辑，两个task中哪个task先执行结束，就以那个task的执行结果为准。</p>
+<p>在 Spark 中推测执行默认是关闭的。</p>
+<p>推测执行可以通过 spark.speculation 属性来配置。<br><code>注意：</code></p>
+<ul>
+<li><p>对于 ETL 类型要入数据库的业务要关闭推测执行机制，这样就不会有重复的数据入库。</p>
+</li>
+<li><p>如果遇到数据倾斜的情况，开启推测执行则有可能导致一直会有task重新启动处理相同的逻辑，任务可能一直处于处理不完的状态。（这时候task慢是因为数据量过多，而不是执行性能不行）</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="2、Spark-资源调度和任务调度的流程："><a href="#2、Spark-资源调度和任务调度的流程：" class="headerlink" title="2、Spark 资源调度和任务调度的流程："></a>2、Spark 资源调度和任务调度的流程：</h2><blockquote>
+<p>1、启动集群后，Worker 节点会向 Master 节点汇报资源情况，Master 掌握了集群资源情况。</p>
+<p>2、当 Spark 提交一个 Application 后，根据 RDD 之间依赖关系将 Application 形成一个 DAG 有向无环图。</p>
+<p>3、任务提交后，Spark 会在Driver 端创建两个对象：DAGScheduler 和 TaskScheduler，</p>
+<p>DAGScheduler 将DAG 根据 RDD 之间的宽窄依赖关系划分为一个个的 Stage，然后将这些Stage 以 TaskSet 的形式提交给 TaskScheduler，</p>
+<p>TaskSchedule 会遍历TaskSet 集合，拿到每个 task 后会将 task 发送到计算节点 Executor 中去执行（其实就是发送到 Executor 中的线程池 ThreadPool 去执行）。</p>
+<p>task 在Executor 线程池中的运行情况会向 TaskScheduler 反馈，当 task 执行失败时，则由 TaskScheduler 负责重试，将 task 重新发送给 Executor 去执行，默认重试 3 次。如果重试 3 次依然失败，那么这个 task 所在的 stage 就失败了。</p>
+<p>stage 失败了则由 DAGScheduler 来负责重试，重新发送 TaskSet 到TaskSchdeuler，Stage 默认重试 4 次。如果重试 4 次以后依然失败，那么这个 job 就失败了。job 失败了，Application 就失败了。</p>
+<p>TaskScheduler 不仅能重试失败的 task,还会重试 straggling*&lt;落后，缓慢的&gt;*task（也就是执行速度比其他 task 慢太多的 task）。如果有运行缓慢的 task那么 TaskScheduler 会启动Spark 的推测执行机制先执行完，task 的执行结果为准。</p>
+</blockquote>
+<h2 id="3、资源调度和任务调度的流程图"><a href="#3、资源调度和任务调度的流程图" class="headerlink" title="3、资源调度和任务调度的流程图"></a>3、资源调度和任务调度的流程图</h2><p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g0aeo4szikj30mt0bcgte.jpg"></p>
+<h2 id="4、粗粒度资源申请和细粒度资源申请"><a href="#4、粗粒度资源申请和细粒度资源申请" class="headerlink" title="4、粗粒度资源申请和细粒度资源申请"></a>4、粗粒度资源申请和细粒度资源申请</h2><ul>
+<li><p><strong>粗粒度资源申请</strong>(Spark）<br>在 Application 执行之前，将所有的资源申请完毕，当资源申请成功后，才会进行任务的调度，当所有的 task 执行完成后，才会释放这部分资源。</p>
+<blockquote>
+<ul>
+<li><p><strong><code>优点：</code></strong></p>
+<p>在 Application 执行之前，所有的资源都申请完毕，每一个task 直接使用资源就可以了，不需要 task 在执行前自己去申请资源，task 启动就快了，task 执行快了，stage 执行就快了，job 就快了，application 执行就快了。</p>
+</li>
+<li><p><strong><code>缺点：</code></strong></p>
+<p>直到最后一个 task 执行完成才会释放资源，集群的资源无法充分利用。</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p><strong>细粒度资源申请</strong><br>Application 执行之前不需要先去申请资源，而是直接执行，让 job中的每一个 task 在执行前自己去申请资源，task 执行完成就释放资源。</p>
+<blockquote>
+<p><strong><code>优点</code>：</strong></p>
+<p>集群的资源可以充分利用。</p>
+<p>**<code>缺点</code>**：</p>
+<p>task 自己去申请资源，task 启动变慢，Application 的运行就响应的变慢了。</p>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>Title:</span><a href="/2019/02/17/Spark(2)/">Spark学习（二）</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">Sukie</a></p>
+        <p><span>Created:</span>2019-02-17, 23:30:00</p>
+        <p><span>Updated:</span>2020-08-08, 14:10:17</p>
+        <p>
+            <span>Full URL:</span><a class="post-url" href="/2019/02/17/Spark(2)/" title="Spark学习（二）">https://sukie-sun.github.io/2019/02/17/Spark(2)/</a>
+            <span class="copy-path" data-clipboard-text="From https://sukie-sun.github.io/2019/02/17/Spark(2)/　　By Sukie" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2019/02/18/Spark(3)/">
+                    Spark学习（三）
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2019/02/16/Spark(1)/">
+                    Spark学习（一）
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E5%8F%8A%E6%B5%8B%E8%AF%95"><span class="toc-number">1.</span> <span class="toc-text">三、集群搭建及测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Standalone"><span class="toc-number">1.1.</span> <span class="toc-text">Standalone</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85%E5%8C%85%E3%80%81%E8%A7%A3%E5%8E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">1、下载安装包、解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%94%B9%E5%90%8D"><span class="toc-number">1.1.2.</span> <span class="toc-text">2、改名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E4%BF%AE%E6%94%B9slaves"><span class="toc-number">1.1.3.</span> <span class="toc-text">3、修改slaves</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E4%BF%AE%E6%94%B9-spark-env-sh"><span class="toc-number">1.1.4.</span> <span class="toc-text">4、修改 spark-env.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E5%85%B6%E4%BB%96%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.5.</span> <span class="toc-text">5、其他节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7%E3%80%81%E5%90%AF%E5%8A%A8%EF%BC%9A-node1"><span class="toc-number">1.1.6.</span> <span class="toc-text">7、启动：(node1)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8%E3%80%81%E6%90%AD%E5%BB%BA%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.1.7.</span> <span class="toc-text">8、搭建客户端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Yarn"><span class="toc-number">1.2.</span> <span class="toc-text">Yarn</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.2.1.</span> <span class="toc-text">1、步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.2.</span> <span class="toc-text">2、配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%B1%82%CF%80%E5%80%BC"><span class="toc-number">1.3.</span> <span class="toc-text">测试：求π值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E6%A1%88%E4%BE%8B%EF%BC%9A"><span class="toc-number">1.3.1.</span> <span class="toc-text">源码案例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Standalone-%E6%8F%90%E4%BA%A4%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.2.</span> <span class="toc-text">Standalone 提交命令:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YARN-%E6%8F%90%E4%BA%A4%E5%91%BD%E4%BB%A4%EF%BC%9A"><span class="toc-number">1.3.3.</span> <span class="toc-text">YARN 提交命令：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Standalone-%E6%A8%A1%E5%BC%8F%E4%B8%A4%E7%A7%8D%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">四、Standalone 模式两种提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81Standalone-client-%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">1、Standalone-client 提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%91%BD%E4%BB%A4%E6%8F%90%E4%BA%A4"><span class="toc-number">2.1.1.</span> <span class="toc-text">(1)命令提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86%E5%9B%BE"><span class="toc-number">2.1.2.</span> <span class="toc-text">(2)执行原理图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.3.</span> <span class="toc-text">(3)执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%80%BB%E7%BB%93"><span class="toc-number">2.1.4.</span> <span class="toc-text">(4)总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Standalone-cluster-%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">2、Standalone-cluster 提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%91%BD%E4%BB%A4%E6%8F%90%E4%BA%A4"><span class="toc-number">2.2.1.</span> <span class="toc-text">（1）命令提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86%E5%9B%BE"><span class="toc-number">2.2.2.</span> <span class="toc-text">（2）执行原理图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.3.</span> <span class="toc-text">（3）执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%884%EF%BC%89%E6%80%BB%E7%BB%93"><span class="toc-number">2.2.4.</span> <span class="toc-text">（4）总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-Standalone"><span class="toc-number">2.3.</span> <span class="toc-text">总结 Standalone</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81Yarn-%E6%A8%A1%E5%BC%8F%E4%B8%A4%E7%A7%8D%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">五、Yarn  模式两种提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81yarn-client-%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">1、yarn-client 提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%91%BD%E4%BB%A4%E6%8F%90%E4%BA%A4-1"><span class="toc-number">3.1.1.</span> <span class="toc-text">（1）命令提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86%E5%9B%BE-1"><span class="toc-number">3.1.2.</span> <span class="toc-text">（2）执行原理图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B-1"><span class="toc-number">3.1.3.</span> <span class="toc-text">（3）执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%884%EF%BC%89%E6%80%BB%E7%BB%93-1"><span class="toc-number">3.1.4.</span> <span class="toc-text">（4）总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81yarn-cluster-%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">2、yarn-cluster 提交任务方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%91%BD%E4%BB%A4%E6%8F%90%E4%BA%A4-2"><span class="toc-number">3.2.1.</span> <span class="toc-text">（1）命令提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86%E5%9B%BE-2"><span class="toc-number">3.2.2.</span> <span class="toc-text">（2）执行原理图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B-2"><span class="toc-number">3.2.3.</span> <span class="toc-text">（3）执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%884%EF%BC%89%E6%80%BB%E7%BB%93-2"><span class="toc-number">3.2.4.</span> <span class="toc-text">（4）总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93yarn"><span class="toc-number">3.3.</span> <span class="toc-text">总结yarn</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%9C%AF%E8%AF%AD%E8%A7%A3%E9%87%8A"><span class="toc-number">4.</span> <span class="toc-text">六、术语解释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%BD%E7%AA%84%E4%BE%9D%E8%B5%96"><span class="toc-number">5.</span> <span class="toc-text">七、宽窄依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E7%AA%84%E4%BE%9D%E8%B5%96"><span class="toc-number">5.1.</span> <span class="toc-text">1、窄依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%AE%BD%E4%BE%9D%E8%B5%96"><span class="toc-number">5.2.</span> <span class="toc-text">2、宽依赖</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81stage"><span class="toc-number">6.</span> <span class="toc-text">八、stage</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E6%A6%82%E5%BF%B5"><span class="toc-number">6.1.</span> <span class="toc-text">0、概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81stage-%E5%88%87%E5%89%B2%E8%A7%84%E5%88%99"><span class="toc-number">6.2.</span> <span class="toc-text">1、stage 切割规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81stage-%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F"><span class="toc-number">6.3.</span> <span class="toc-text">2、stage 计算模式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%9D%E3%80%81Spark-%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%92%8C%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6"><span class="toc-number">7.</span> <span class="toc-text">九、Spark  资源调度和任务调度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%A6%82%E5%BF%B5%E8%A7%A3%E9%87%8A"><span class="toc-number">7.1.</span> <span class="toc-text">1、概念解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Spark-%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%92%8C%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">7.2.</span> <span class="toc-text">2、Spark 资源调度和任务调度的流程：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E8%B5%84%E6%BA%90%E8%B0%83%E5%BA%A6%E5%92%8C%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">7.3.</span> <span class="toc-text">3、资源调度和任务调度的流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E7%B2%97%E7%B2%92%E5%BA%A6%E8%B5%84%E6%BA%90%E7%94%B3%E8%AF%B7%E5%92%8C%E7%BB%86%E7%B2%92%E5%BA%A6%E8%B5%84%E6%BA%90%E7%94%B3%E8%AF%B7"><span class="toc-number">7.4.</span> <span class="toc-text">4、粗粒度资源申请和细粒度资源申请</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
+
+    <script>
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Spark学习（二）　| Sukie's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+	  <section id="comments" style="margin: 2em; padding: 2em; background: rgba(255, 255, 255, 0.5)">
+    <div id="vcomment" class="comment"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js"></script>
+    <script>
+      new Valine({
+        el: '#vcomment',
+        notify: 'true',
+        verify: 'true',
+        app_id: "qha2YfPRUR6IN1LfnbliYqay-gzGzoHsz",
+        app_key: "b00TckRiHRVQphnJwuFp9isO",
+        placeholder: "Just go go!",
+        avatar: "mp"
+      });
+    </script>
+</section>	  
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2019/02/18/Spark(3)/" title="Pre: Spark学习（三）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2019/02/16/Spark(1)/" title="Next: Spark学习（一）">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/08/hello-world/">Hello World</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Spark(6)/">Spark学习（六）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/Spark(5)/">Spark学习（五）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/Spark(4)/">Spark学习（四）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/Spark(3)/">Spark学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/17/Spark(2)/">Spark学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Spark(1)/">Spark学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/List%E6%96%B9%E6%B3%95/">List方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Map%E6%96%B9%E6%B3%95/">Map方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Set%E6%96%B9%E6%B3%95/">Set方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/String%E6%96%B9%E6%B3%95/">String 方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">面试问题总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95/">数组方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">Scala学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">Storm学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/28/Kafka%E5%AD%A6%E4%B9%A0/">Kafka学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/25/Elasticsearch%E5%AD%A6%E4%B9%A0/">Elasticsearch学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/CDH%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0/">CDH部署操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/Flume%E5%AD%A6%E4%B9%A0/">Flume学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">HBase性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">Sqoop学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84UDF%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/">Hive中常用的UDF函数总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%BC%98%E5%8C%96/">Hive优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/11/Hive%E5%AD%A6%E4%B9%A0/">Hive学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/MapReduce%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">MapReduce源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/07/MapReduce%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">MapReduce案例实践</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/05/MapReduce%E5%AD%A6%E4%B9%A0/">MapReduce学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Zookeeper%E5%AD%A6%E4%B9%A0/">Zookeeper学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Yarn%E5%AD%A6%E4%B9%A0/">YARN的入门学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Hadoop2.X/">Hadoop2.X</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/HDFS%E5%AD%A6%E4%B9%A0/">HDFS学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A02/">Nginx入门学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A01/">Nginx入门学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/30/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%80%9D%E6%83%B3/">大数据思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A03/">常用Linux命令的学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">常用Linux命令的学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">Linux系统数据库MySQL安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/Linux%E7%B3%BB%E7%BB%9FCentOS%206%E5%AE%89%E8%A3%85/">Linux学习之CentOS 6系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85maven%E5%9D%90%E6%A0%87%E4%BE%9D%E8%B5%96/">手动安装maven坐标依赖</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/hexo/">Hexo搭建个人博客</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2020 Sukie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+
+    </div>
+    
+    
+<script src="/js/GithubRepoWidget.js"></script>
+
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var iPad = window.navigator.userAgent.indexOf('iPad');
+      if (iPad > -1) {
+        let bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+        let bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+        $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+      } else if ($(".left-col").css("display") === "none") {
+        $("body").css({
+          "background-image": "url(/background/mobile.jpg)",
+          "background-repeat": "no-repeat",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      } else {
+        var backgroundnum = 5;
+        var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+        $("body").css({
+          "background": backgroundimg,
+          "background-position": "0% 80%",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      }
+    })
+  </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+             github: ".github-widget a", 
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+            
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script src="/js/busuanzi_pure_mini.js"></script>
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?6b4caaf6c3a0542e82c2abbce9da41cc"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"live2d_models/live2d-widget-model-chitose"},"display":{"position":"right","width":250,"height":350,"hOffset":-50,"vOffset":-85},"mobile":{"show":false},"react":{"opacityDefault":0.9,"opacityOnHover":0.3}});</script></body>
+</html>

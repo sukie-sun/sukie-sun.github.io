@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Sukie" />
+
+
+
+<meta name="description" content="Redis的详细学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习">
+<meta property="og:url" content="https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Sukie&#39;s Blog">
+<meta property="og:description" content="Redis的详细学习">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/images/redis1.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/images/redis2.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/images/redis0.jpg">
+<meta property="article:published_time" content="2019-02-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-07T13:07:21.779Z">
+<meta property="article:author" content="Sukie">
+<meta property="article:tag" content="Linux系统环境">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/images/redis1.jpg">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Sukie&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Redis学习 | Sukie&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src=""></script>
+<script src=""></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.0.0"><link rel="stylesheet" href="/css/prism-a11y-dark.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Sukie</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">你好，新世界、新编程</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>Menu</li>
+                        <li>Tags</li>
+                        
+                        <li>Friends</li>
+                        
+                        
+                        <li>About Me</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/essays/">随笔</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                            <li><a href="/logs/">更新日志</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-6/" rel="tag">CentOS 6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HDFS/" rel="tag">HDFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive/" rel="tag">Hive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/List/" rel="tag">List</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MapReduce/" rel="tag">MapReduce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark-shell/" rel="tag">Spark shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkSql/" rel="tag">SparkSql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkStreaming/" rel="tag">SparkStreaming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkUI/" rel="tag">SparkUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark%E6%A1%86%E6%9E%B6/" rel="tag">Spark框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sqoop/" rel="tag">Sqoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Storm%EF%BC%8C%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">Storm，流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zookeeper/" rel="tag">Zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/" rel="tag">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sparkcore%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" rel="tag">sparkcore应用案例</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yarn/" rel="tag">yarn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag">不同数据源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AA%E4%BA%BA%E5%85%B4%E8%B6%A3/" rel="tag">个人兴趣</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E/" rel="tag">分布式搜索和分析引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">分布式离线计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B/" rel="tag">分而治之</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%81%E8%A3%85RDD/" rel="tag">封装RDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%BF%E6%92%AD/" rel="tag">广播</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F/" rel="tag">消息队列系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%AF%E5%8A%A0%E5%99%A8/" rel="tag">累加器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81/" rel="tag">静态</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">新世界编程</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Sukie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Sukie</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">你好，新世界、新编程</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/essays/">随笔</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                    <li><a href="/logs/">更新日志</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
+</nav>
+      <div class="body-wrap"><article id="post-Redis学习" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/" class="article-date">
+      <time datetime="2019-02-13T16:00:00.000Z" itemprop="datePublished">2019-02-14</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis学习
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%BA%93/">内存数据库</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud" style="display: flex; flex-wrap: wrap">  
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+		<span class="post-count">总字数8.7k</span>
+		<span class="post-count">预计阅读32分钟</span>		  
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+		  
+			
+		
+        <h1 id="一、Redis的简介"><a href="#一、Redis的简介" class="headerlink" title="一、Redis的简介"></a>一、Redis的简介</h1><h2 id="1、前情提要"><a href="#1、前情提要" class="headerlink" title="1、前情提要"></a>1、前情提要</h2><p><strong>磁盘数据库</strong>： </p>
+<p> MySQL（关系型数据库）<br> Hbase</p>
+<p><img src="images/redis1.jpg"></p>
+<p><strong>内存数据库</strong>：<br>  Redis<br>  memcached<br>  （成本高、性能好、读写速度快、数据安全性低、直接把值放到内存里面，内存数据库就直接把值取到）</p>
+<p><img src="images/redis2.jpg"></p>
+<h2 id="2、用作数据库、缓存和消息中间件"><a href="#2、用作数据库、缓存和消息中间件" class="headerlink" title="2、用作数据库、缓存和消息中间件"></a>2、用作数据库、缓存和消息中间件</h2><blockquote>
+<p>二八法则：80%是经常被查询，使用内存数据库做缓存中间件，读取性能高</p>
+</blockquote>
+<h1 id="二、Redis的特点"><a href="#二、Redis的特点" class="headerlink" title="二、Redis的特点"></a>二、Redis的特点</h1><h2 id="1、数据结构丰富"><a href="#1、数据结构丰富" class="headerlink" title="1、数据结构丰富"></a>1、数据结构丰富</h2><p>Redis虽然是键值对数据库，但他支持多种类型的数据结构（主要是不同类型的value）</p>
+<blockquote>
+<p>字符串、散列（hashes），列表（lists），集合（sets），有序集合（sorted sets）</p>
+</blockquote>
+<p><img src="images/redis0.jpg"></p>
+<h2 id="2、数据的持久化"><a href="#2、数据的持久化" class="headerlink" title="2、数据的持久化"></a>2、数据的持久化</h2><p>Redis 支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载到内存进行使用</p>
+<h2 id="3、数据的备份"><a href="#3、数据的备份" class="headerlink" title="3、数据的备份"></a>3、数据的备份</h2><p>Redis 支持数据的备份，即 master-slave 模式的数据备份。</p>
+<h1 id="三、Redis的安装"><a href="#三、Redis的安装" class="headerlink" title="三、Redis的安装"></a>三、Redis的安装</h1><h2 id="1、下载安装包"><a href="#1、下载安装包" class="headerlink" title="1、下载安装包"></a>1、下载安装包</h2><p>redis-3.2.9.tar.gz </p>
+<p>网址：<a target="_blank" rel="noopener" href="http://www.redis.cn/download.html">http://www.redis.cn/download.html</a></p>
+<h2 id="2、依赖软件安装"><a href="#2、依赖软件安装" class="headerlink" title="2、依赖软件安装"></a>2、依赖软件安装</h2><pre><code>yum install gcc tcl -y</code></pre>
+<h2 id="3、解压-redis"><a href="#3、解压-redis" class="headerlink" title="3、解压 redis"></a>3、解压 redis</h2><p>并进入解压目录</p>
+<pre><code>tar -zvxf redis-3.2.9.tar.gz </code></pre>
+<h2 id="4、-执行-编译命令"><a href="#4、-执行-编译命令" class="headerlink" title="4、 执行 编译命令"></a>4、 执行 编译命令</h2><p>（<code>注意：</code>当前路径下需包含 makefile文件  ： 用于手动编译）</p>
+<pre><code>make &amp;&amp; make install</code></pre>
+<h2 id="5、修改-redis-的配置文件"><a href="#5、修改-redis-的配置文件" class="headerlink" title="5、修改 redis 的配置文件"></a>5、修改 redis 的配置文件</h2><p> redis.config ( 先 备份一个原厂配置文件)</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim redis.config<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>修改运行模式为后台运行（如果为no，启动redis-server后，控制台就会卡在启动状态）daemonize守护进程</li>
+</ul>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">daemonize</span> <span class="token attr-value">yes</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>指定redis数据持久化的路径(在执行redis-cli命令的当前路径，会生成dump.rdb文件)</li>
+</ul>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">dir</span> <span class="token attr-value">  ./</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>使用默认的 redis.conf 文件，redis 默认只能通过 127.0.0.1:6379 这个地址访问，这样就只能在本机上操作了</li>
+<li>想要远程操作，需要修改redis.conf 这个配置文件，在配置文件中添加相应的 ip 地址， 在bind 127.0.0.1 后面追加</li>
+</ul>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">bind</span> <span class="token attr-value">127.0.0.1 192.168.198.128</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="6、启动server服务"><a href="#6、启动server服务" class="headerlink" title="6、启动server服务"></a>6、启动server服务</h2><p>（如在redis的解压目录下）</p>
+<blockquote>
+<p>命令： redis-server 配置文件的地址</p>
+</blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell"> redis-server redis-conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>终止服务：（查询redis进程号，然后，kill该进程）</p>
+<pre><code>ps -ef | grep redis
+kill 进程号</code></pre>
+<h2 id="7、启动客户端服务"><a href="#7、启动客户端服务" class="headerlink" title="7、启动客户端服务"></a>7、启动客户端服务</h2><pre class="line-numbers language-shell"><code class="language-shell">redis-cli<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>客户端命令格式：redis-cli –h host –p port</p>
+<p>显示：</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; </p>
+</blockquote>
+<h1 id="四、Redis的使用"><a href="#四、Redis的使用" class="headerlink" title="四、Redis的使用"></a>四、Redis的使用</h1><h2 id="0、前情提要"><a href="#0、前情提要" class="headerlink" title="0、前情提要"></a>0、前情提要</h2><p>Redis的key 值是二进制安全的，这意味着可以用任何二进制序列作为 key值。</p>
+<h2 id="1、切换数据库（实例）"><a href="#1、切换数据库（实例）" class="headerlink" title="1、切换数据库（实例）"></a>1、切换数据库（实例）</h2><blockquote>
+<p>select databaseid 默认共有 16 个实例库，</p>
+<p>登录时是 ID 为0 的数据库，总共有 16 个</p>
+</blockquote>
+<pre><code>select 0</code></pre>
+<h2 id="2、Key操作："><a href="#2、Key操作：" class="headerlink" title="2、Key操作："></a>2、Key操作：</h2><p>（前提：是针对已经存在key）</p>
+<blockquote>
+<p>KEYS pattern<br>查找所有符合给定模式 pattern 的 key 。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">keys * <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>列出所有Key</p>
+</blockquote>
+<blockquote>
+<p>EXISTS  key<br>检查给定 key 是否存在。</p>
+<pre><code>EXISTS  name</code></pre>
+<p>若显示0，则不存在；若显示1，则存在</p>
+</blockquote>
+<blockquote>
+<p>EXPIRE key seconds<br>为给定 key 设置生存时间，当 key 过期时(生存时间为 0 )，它会被自动删除。</p>
+<pre><code>EXPIRE age 1</code></pre>
+<p>若设置成功，显示1；显示0 ，则为失败，可能是该key不存在</p>
+</blockquote>
+<blockquote>
+<p>TTL key<br>以秒为单位，返回给定 key 的剩余生存时间</p>
+</blockquote>
+<blockquote>
+<p>MOVE key db</p>
+<p>将当前数据库的 key 移动到给定的数据库 db 当中。<br>如果当前数据库(源数据库)和给定数据库(目标数据库)有相同名字的给定 key ，或者 key 不存在于当前数据库，那么 MOVE 没有任何效果</p>
+<pre><code> move name 1</code></pre>
+<p>name 是数据库0中已存在的key，移动到数据库1中后，0中就不存在该key</p>
+</blockquote>
+<blockquote>
+<p>TYPE key</p>
+<p>返回 key 所储存的值的类型。</p>
+</blockquote>
+<blockquote>
+<pre><code>DEL key [key ...]</code></pre>
+<p>删除给定的一个或多个 key 。不存在的 key 会被忽略</p>
+</blockquote>
+<h2 id="3、String-操作"><a href="#3、String-操作" class="headerlink" title="3、String  操作"></a>3、String  操作</h2><p>字符串是一种最基本的 Redis 值类型。Redis 字符串是二进制安全的，这<br>意味着一个 Redis 字符串能包含任意类型的数据</p>
+<blockquote>
+<pre><code>SET key value [EX seconds][PX milliseconds] [NX|XX]</code></pre>
+<p> EX 设置过期时间，秒，等同于 SETEX key seconds value<br> PX 设置过期时间，毫秒，等同于 PSETEX key milliseconds value<br> NX 键不存在，才能设置，等同于 SETNX key value<br> XX 键存在时，才能设置</p>
+</blockquote>
+<p><code>注意</code></p>
+<p>将字符串值 value 关联到 key 。<br>如果 key 已经持有其他值， SET 就覆写旧值，无视类型。<br>对于某个原本带有生存时间（TTL）的键来说， 当 SET 命令成功在这个键上执行时， 这个键原有的 TTL 将被清除。</p>
+<blockquote>
+<pre><code>GET key</code></pre>
+<p>返回 key 所关联的字符串值。如果 key 不存在那么返回特殊值 nil 。<br>假如 key 储存的值不是字符串类型，返回一个错误，因为 GET 只能<br>用于处理字符串值</p>
+</blockquote>
+<blockquote>
+<pre><code>APPEND key value</code></pre>
+<p>如果 key 已经存在并且是一个字符串， APPEND 命令将 value 追加到 key 原来的值的末尾。<br>如果 key 不存在， APPEND 就简单地将给定 key 设为 value ，就像执行 SET key value 一样。</p>
+</blockquote>
+<blockquote>
+<pre><code>STRLEN key</code></pre>
+<p>返回 key 所储存的字符串值的长度。<br>当 key 储存的不是字符串值时，返回一个错误。</p>
+</blockquote>
+<blockquote>
+<pre><code>INCR key</code></pre>
+<p>将 key 中储存的数字值增一，并显示。<br>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行INCR 操作。<br>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</p>
+<p><code>错误：</code></p>
+<p>(error) ERR value is not an integer or out of range</p>
+</blockquote>
+<blockquote>
+<pre><code>INCRBY key increment</code></pre>
+<p>将 key 所储存的值加上增量 increment ，并显示。<br>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行INCRBY 命令。<br>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</p>
+</blockquote>
+<blockquote>
+<pre><code>DECR key</code></pre>
+<p>将 key 中储存的数字值减一。</p>
+<pre><code>DECRBY key decrement</code></pre>
+<p>将 key 所储存的值减去减量 decrement 。</p>
+</blockquote>
+<blockquote>
+<pre><code> GETRANGE key start end</code></pre>
+<p>返回 key 中字符串值的子字符串，字符串的截取范围由 start 和end 两个偏移量决定(包括 start 和 end 在内)。<br>负数偏移量表示从字符串最后开始计数， -1 表示最后一个字符， -2 表示倒数第二个，以此类推</p>
+</blockquote>
+<blockquote>
+<pre><code>SETRANGE key offset value</code></pre>
+<p>用 value 参数覆写(overwrite)给定 key 所储存的字符串值，从偏移量 offset 开始。<br>不存在的 key 当作空白字符串处理。</p>
+</blockquote>
+<blockquote>
+<pre><code>SETEX key  seconds value</code></pre>
+<p>将值 value 关联到 key ，并将 key 的生存时间设为 seconds<br>如果 key 已经存在， SETEX 命令将覆写旧值。<br>这个命令类似于以下两个命令：</p>
+<pre><code>SET key value
+EXPIRE key seconds # 设置生存时间</code></pre>
+</blockquote>
+<blockquote>
+<p>不同之处是， SETEX 是一个原子性(atomic)操作，关联值和设置生存时间两个动作会在同一时间内完成，该命令在 Redis 用作缓存时，非常实用。</p>
+</blockquote>
+<blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">SETNX key value<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>将 key 的值设为 value ，当且仅当 key 不存在。<br>若给定的 key 已经存在，则 SETNX 不做任何动作。<br>SETNX 是『SET if Not eXists』(如果不存在，则 SET)的简写。</p>
+</blockquote>
+<blockquote>
+<pre><code>MGET key [key ...]</code></pre>
+<p>返回所有(一个或多个)给定 key 的值。<br>如果给定的 key 里面，有某个 key 不存在，那么这个 key 返回特殊值 nil 。因此，该命令永不失败</p>
+</blockquote>
+<blockquote>
+<pre><code>MSET key value [key value ...]</code></pre>
+<p>同时设置一个或多个 key-value 对。<br>如果某个给定 key 已经存在，那么 MSET 会用新值覆盖原来的旧值，如果这不是你所希望的效果，请考虑使用 MSETNX 命令：它只会在所有给定 key 都不存在的情况下进行设置操作。</p>
+</blockquote>
+<blockquote>
+<pre><code>MSETNX key value [key value ...]</code></pre>
+<p>同时设置一个或多个 key-value 对，当且仅当所有给定 key 都不存在。<br>即使只有一个给定 key 已存在， MSETNX 也会拒绝执行所有给定 key 的设置操作。<br>MSETNX 是原子性的，因此它可以用作设置多个不同 key 表示不同字段(field)的唯一性逻辑对象(unique logic object)，所有字段要么全被设置，要么全不被设置。</p>
+</blockquote>
+<h2 id="4、-List-操作"><a href="#4、-List-操作" class="headerlink" title="4、 List 操作"></a>4、 List 操作</h2><blockquote>
+<pre><code>LPUSH key value [value ...]</code></pre>
+<p>将一个或多个值 value 插入到列表 key 的表头。（从左边插入）<br>如果有多个 value 值，那么各个 value 值按从左到右的顺序依次 插 入 到 表 头 ：</p>
+<p> 比 如 说 ，</p>
+<p> 对 空 列 表 mylist  执 行 命令 LPUSH mylist a b c ，列表的值将是 c b a ，</p>
+<p>这等同于原 子 性 地 执行 LPUSH mylist a 、 LPUSH mylist b 和 LPUSH mylistc 三个命令。</p>
+</blockquote>
+<blockquote>
+<pre><code>RPUSH key value [value ...]</code></pre>
+<p>将一个或多个值 value 插入到列表 key 的表尾。（从右边插入）<br>如果有多个 value 值，那么各个 value 值按从左到右的顺序依次 插 入 到 表 尾 ： </p>
+<p>比 如 对 一 个 空 列 表 mylist  执行 RPUSH mylist a b c ，得出的结果列表为 a b c ，</p>
+<p>等同于 执 行 命令 RPUSH mylist a 、 RPUSH mylist b 、 RPUSH mylist c 。</p>
+</blockquote>
+<blockquote>
+<pre><code>LRANGE key  start stop</code></pre>
+<p>返 回 列 表 key  中 指 定 区 间 内 的 元 素 ， 区 间 以 偏 移量 start 和 stop 指定。（从左至右）<br>下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。-1 表示最后一个元素</p>
+</blockquote>
+<blockquote>
+<pre><code>LPOP key</code></pre>
+<p>移除并返回列表 key 的头元素。（从列表key的左边开始弹出元素）</p>
+<pre><code>RPOP key</code></pre>
+<p>移除并返回列表 key 的尾元素。（从列表key的右边开始弹出元素）</p>
+</blockquote>
+<p><code>备注：</code></p>
+<blockquote>
+<p>同向为栈，异向为队列<br>栈（lpush  lpop  ； rpush  rpop）</p>
+<p>队列（lpush  rpop ； rpush   lpop  ）</p>
+<p>ArrayList : 数组（查找快，增删慢）<br>LinkList  : 链表（查找慢，增删快）</p>
+</blockquote>
+<blockquote>
+<pre><code>LINDEX key index</code></pre>
+<p>返回列表 key 中，下标为 index 的元素。<br>下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。<br>你也可以使用负数下标，以 -1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推</p>
+</blockquote>
+<blockquote>
+<pre><code>LLEN key</code></pre>
+<p>返回列表 key 的长度。<br>如果 key 不存在，则 key 被解释为一个空列表，返回 0 .</p>
+<pre><code>LREM key count value</code></pre>
+<p>根据参数 count 的值，移除列表中与参数 value 相等的元素。<br>count 的值可以是以下几种：<br>count &gt; 0 : 从表头开始向表尾搜索，移除与 value 相等的元<br>素，数量为 count 。<br>count &lt; 0 : 从表尾开始向表头搜索，移除与 value 相等的元<br>素，数量为 count 的绝对值。<br>count = 0 : 移除表中所有与 value 相等的值。</p>
+</blockquote>
+<blockquote>
+<pre><code>LTRIM key start stop</code></pre>
+<p>对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，</p>
+<p>不在指定区间之内的元素都将被删除。<br>举 个 例 子 ， 执 行 命 令 LTRIM list 0 2 ， 表 示 只 保 留 列表 list 的前三个元素，其余元素全部删除</p>
+</blockquote>
+<blockquote>
+<pre><code>RPOPLPUSH source  destination</code></pre>
+<p>命令 RPOPLPUSH 在一个原子时间内，执行以下两个动作：<br>将列表 source 中的最后一个元素(尾元素)弹出，并返回给客户端。将 source  弹 出 的 元 素 插 入 到 列 表 destination  ， 作为 destination 列表的的头元素。<br>举 个 例 子 ， </p>
+<p>你 有 两 个 列表 source  和 destination  ， source  列 表 有 元素 a, b, c ， destination 列表有元素 x, y, z ，执行 RPOPLPUSH sourcedestination 之后， source 列表包含元素 a, b ， destination 列表包含元素 c, x, y, z ，并且元素 c 会被返回给客户端。</p>
+</blockquote>
+<blockquote>
+<pre><code>LSET key index value</code></pre>
+<p>将列表 key 下标为 index 的元素的值设置为 value 。<br>当 index 参数超出范围，或对一个空列表( key 不存在)进行 LSET 时，返回一个错误。</p>
+</blockquote>
+<blockquote>
+<pre><code>LINSERT key BEFORE|AFTER pivot value</code></pre>
+<p>将值 value 插入到列表 key 当中，位于值 pivot 之前或之后。<br>当 pivot 不存在于列表 key 时，不执行任何操作。<br>当 key 不存在时， key 被视为空列表，不执行任何操作。</p>
+</blockquote>
+<h2 id="5、Set操作"><a href="#5、Set操作" class="headerlink" title="5、Set操作"></a>5、Set操作</h2><blockquote>
+<pre><code>SADD key member [member ...]</code></pre>
+<p>将一个或多个 member 元素加入到集合 key 当中（无序），已经存在于集合的 member 元素将被忽略。<br>假如 key 不存在，则创建一个只包含 member 元素作成员的集合。</p>
+</blockquote>
+<blockquote>
+<pre><code>SMEMBERS key</code></pre>
+<p>返回集合 key 中的所有成员。</p>
+<p>不存在的 key 被视为空集合。</p>
+<pre><code>SISMEMBER key member</code></pre>
+<p>判断 member 元素是否是集合 key 的成员。</p>
+</blockquote>
+<blockquote>
+<pre><code>SCARD key</code></pre>
+<p>返回集合 key 的基数(集合中元素的数量)。</p>
+</blockquote>
+<blockquote>
+<pre><code>SREM key member [member ...]</code></pre>
+<p>移 除 集 合 key 中 的 一 个 或 多 个 member 元 素 ， 不 存 在的 member 元素会被忽略。</p>
+<pre><code>SPOP key （抽奖场景）</code></pre>
+<p>移除并返回集合中的一个随机元素。<br>如果只想获取一个随机元素，但不想该元素从集合中被移除的话，可以使用 SRANDMEMBER 命令。</p>
+<pre><code>SMOVE source destination member</code></pre>
+<p>将 member 元素从 source 集合移动到 destination 集合。<br>SMOVE 是原子性操作。<br>如果 source 集合不存在或不包含指定的 member 元素，<br>则 SMOVE 命令不执行任何操作，仅返回 0 。否则， member 元素从 source 集合中被移除，并添加到 destination 集合中去。<br>当 destination 集合已经包含 member 元素时， SMOVE 命令只是简单地将 source 集合中的 member 元素删除。<br>当 source 或 destination 不是集合类型时，返回一个错误。</p>
+</blockquote>
+<blockquote>
+<pre><code>SDIFF key [key ...]</code></pre>
+<p>求差集：从第一个 key 的集合中去除其他集合和自己的交集部分</p>
+<p>sdiff求两个set的差集，有先后顺序，以靠前的为基准，列出前一个set有的，而后一个set没有的元素</p>
+</blockquote>
+<blockquote>
+<pre><code>SINTER key [key  ...] （微博求共同关注场景）</code></pre>
+<p>返回一个集合的全部成员，该集合是所有给定集合的交集。<br>不存在的 key 被视为空集。<br>当给定集合当中有一个空集时，结果也为空集(根据集合运算定律)。</p>
+<pre><code>SUNION key [key ...]</code></pre>
+<p>返回一个集合的全部成员，该集合是所有给定集合的并集。<br>不存在的 key 被视为空集。</p>
+</blockquote>
+<h2 id="6、Sorted-set操作"><a href="#6、Sorted-set操作" class="headerlink" title="6、Sorted set操作"></a>6、Sorted set操作</h2><p>类似 Sets,但是每个字符串元素都关联到一个叫 score 浮动数值。里面的元素总是通过 score 进行着排序，所以不同的是，它是可以检索的一系列元素。</p>
+<p><code>注意：</code></p>
+<blockquote>
+<p>在 set 基础上，加上 score 值，</p>
+<p>之前 set 是key value1 value2….<br>现在 Zset 是 key score1 value1 score2 value2</p>
+</blockquote>
+<blockquote>
+<pre><code>ZADD key score member [[score member][score member] ...]</code></pre>
+<p>将 一 个 或 多 个 member 元 素 及 其 score 值 加 入 到 有 序集 key 当中。</p>
+<p><code>显示</code></p>
+<p>redis&gt; ZADD page_rank 9 baidu.com 8 bing.com 10 google.com<br>(integer) 2<br>redis&gt; ZRANGE page_rank 0 -1 WITHSCORES</p>
+<ol>
+<li>“bing.com”</li>
+<li>“8”</li>
+<li>“baidu.com”</li>
+<li>“9”</li>
+<li>“google.com”</li>
+<li>“10”</li>
+</ol>
+</blockquote>
+<blockquote>
+<pre><code>ZRANGE key start stop [WITHSCORES]</code></pre>
+<p>返回有序集 key 中，指定区间内的成员。<br>其中成员的位置按 score 值递增(从小到大)来排序。<br>具有相同 score 值的成员按字典序(lexicographical order )来排列。<br>如果你需要成员按 score 值递减(从大到小)来排列，请使用 ZREVRANGE 命令。<br>下标参数 start 和 stop 都以 0 为底，</p>
+<p>也就是说，以 0 表示有序集第一个成员，以 1 表示有序集第二个成员，以此类推。<br>你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。<br>超出范围的下标并不会引起错误。<br>比 如 说 ， 当 start 的 值 比 有 序 集 的 最 大 下 标 还 要 大 ， 或是 start &gt; stop 时， ZRANGE 命令只是简单地返回一个空列表。<br>另一方面，假如 stop 参数的值比有序集的最大下标还要大，那么Redis 将 stop 当作最大下标来处理。<br>可以通过使用 WITHSCORES 选项，来让成员和它的 score 值一并返回，</p>
+<p>返回列表以 value1,score1, …, valueN,scoreN 的格式表示。</p>
+</blockquote>
+<blockquote>
+<pre><code>ZREVRANGE key start stop [WITHSCORES]( ( 音乐排行榜场景) )</code></pre>
+<p>返回有序集 key 中，指定区间内的成员。<br>其中成员的位置按 score 值递减(从大到小)来排列。</p>
+</blockquote>
+<blockquote>
+<pre><code>ZREM key member [member ...]</code></pre>
+<p>移除有序集 key 中的一个或多个成员，不存在的成员将被忽略。</p>
+<pre><code>ZREMRANGEBYSCORE key min max</code></pre>
+<p>移除有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。</p>
+</blockquote>
+<blockquote>
+<pre><code>ZSCORE key member</code></pre>
+<p>返回有序集 key 中，成员 member 的 score 值。</p>
+<pre><code>ZCARD key</code></pre>
+<p>返回有序集 key 的基数（包含的元素的个数）。</p>
+<pre><code>ZCOUNT key min max</code></pre>
+<p>返回有序集 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max )的成员的数量。</p>
+<pre><code>ZRANK key member</code></pre>
+<p>返回有序集 key 中，成员 member 的 score 值。<br>ZCARD key<br>返回有序集 key 的基数（包含的元素的个数）。<br>ZCOUNT key min max<br>返回有序集 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max )的成员的数量。<br>ZRANK key member</p>
+<p>返回有序集 key 中成员 member 的排名。其中有序集成员按 score 值递增(从小到大)顺序排列。</p>
+</blockquote>
+<h2 id="7、-Hash-操作-（散列）"><a href="#7、-Hash-操作-（散列）" class="headerlink" title="7、 Hash  操作  （散列）"></a>7、 Hash  操作  （散列）</h2><p>KV 模式不变，但是 V 是一个键值对</p>
+<blockquote>
+<pre><code>HSET key field value</code></pre>
+<p>将哈希表 key 中的域 field 的值设为 value 。</p>
+</blockquote>
+<blockquote>
+<pre><code>HGET key field</code></pre>
+<p>返回哈希表 key 中给定域 field 的值。</p>
+</blockquote>
+<blockquote>
+<pre><code>HMSET key field value [field value ...]</code></pre>
+<p>同时将多个 field-value (域-值)对设置到哈希表 key 中。<br>此命令会覆盖哈希表中已存在的域。</p>
+<pre><code>HMGET key field [field ...]</code></pre>
+<p>返回哈希表 key 中，一个或多个给定域的值。</p>
+<pre><code>HGETALL key</code></pre>
+<p>返回哈希表 key 中，所有的域和值。</p>
+</blockquote>
+<blockquote>
+<pre><code>HKEYS key</code></pre>
+<p>返回哈希表 key 中的所有域。</p>
+<pre><code>HVALS key</code></pre>
+<p>返回哈希表 key 中所有域的值。</p>
+</blockquote>
+<blockquote>
+<pre><code>HSETNX key field value</code></pre>
+<p>将哈希表 key 中的域 field 的值设置为 value ，当且仅当域 field 不存在。<br>若域 field 已经存在，该操作无效。</p>
+</blockquote>
+<blockquote>
+<pre><code>HEXISTS key field</code></pre>
+<p>查看哈希表 key 中，给定域 field 是否存在。</p>
+</blockquote>
+<blockquote>
+<pre><code>HDEL key field [field ...]</code></pre>
+<p>删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略。</p>
+</blockquote>
+<blockquote>
+<pre><code>HINCRBY key field increment</code></pre>
+<p>为哈希表 key 中的域 field 的值加上增量 increment 。<br>增量也可以为负数，相当于对给定域进行减法操作。</p>
+</blockquote>
+<blockquote>
+<pre><code>HINCRBYFLOAT key field increment</code></pre>
+<p>增加浮点数<br>场景：用户维度统计<br>统计数包括：关注数、粉丝数、喜欢商品数、发帖数<br>用户为 Key，不同维度为 Field，Value 为统计数</p>
+</blockquote>
+<h1 id="五、Redis-的持久化"><a href="#五、Redis-的持久化" class="headerlink" title="五、Redis 的持久化"></a>五、Redis 的持久化</h1><h2 id="1、Redis-持久化方式"><a href="#1、Redis-持久化方式" class="headerlink" title="1、Redis  持久化方式"></a>1、Redis  持久化方式</h2><ul>
+<li><p>RDB 持久化可以在指定的时间间隔内生成数据集的时间点快照（point-in-time snapshot）。</p>
+</li>
+<li><p>AOF 持久化记录服务器执行的所有写操作命令，并在服务器启动时，通过重新执行这些命令来还原数据集。 </p>
+<p>AOF 文件中的命令全部以 Redis协议的格式来保存，新命令会被追加到文件的末尾。 </p>
+<p>Redis 还可以在后台对 AOF 文件进行重写（rewrite），使得 AOF 文件的体积不会超出保<br>存数据集状态所需的实际大小。</p>
+</li>
+<li><p>Redis 还可以同时使用 AOF 持久化和 RDB 持久化。 </p>
+<p>在这种情况下， 当 Redis 重启时， 它会优先使用 AOF 文件来还原数据集， </p>
+<p>因为 AOF 文件保存的数据集通常比 RDB 文件所保存的数据集更完整。</p>
+</li>
+<li><p>你甚至可以关闭持久化功能，让数据只在服务器运行时存在。</p>
+</li>
+</ul>
+<h2 id="2、Rdb"><a href="#2、Rdb" class="headerlink" title="2、Rdb:"></a>2、Rdb:</h2><p>（1）在指定的时间间隔内将内存中的数据集快照写入磁盘，也就是行话讲的 snapshot 快照，它恢复时就是将快照文件直接读到内存里。</p>
+<p>Rdb 保存的是 dump.rdb 文件</p>
+<p>（2）如何触发 RDB 快照</p>
+<p>Save：save 时只管保存，其他不管，全部阻塞。<br>Bgsave：redis 会在后台进行快照操作，快照操作的同时还可以响应客户端的请求，可以通过 lastsave 命令获取最后一次成功执行快照的时间。</p>
+<p>（3）如何停止</p>
+<p>静态停止：将配置文件里的 RDB 保存规则改为 save “”<br>动态停止 ：</p>
+<blockquote>
+<p> config set save “ ”</p>
+</blockquote>
+<h2 id="3、AOF"><a href="#3、AOF" class="headerlink" title="3、AOF"></a>3、AOF</h2><p>(Append Only File)</p>
+<p>（1）以日志的形式来记录每个写操作，将 redis 执行过的所有写指令记录下来(读操作不记录)。只许追加文件但不可以改写文件，redis 启动之初会读取该文件重新构建数据，换言之，redis 重启的话就根据日志文件的内容将写指令从前到后执行一次一完成数据恢复工作。<br>======APPEND ONLY MODE======<br>开启 aof ：appendonly yes (默认是 no)</p>
+<p>（2）Aof  策略</p>
+<p>Appendfsync 参数：</p>
+<p>Always ：同步持久化 每次发生数据变更会被立即记录到磁盘，性能较差<br>但数据完整性较好。<br>Everysec： 出厂默认推荐，异步操作，每秒记录，如果一秒宕机，有数<br>据丢失<br>No：从不 fsync ：将数据交给操作系统来处理。更快，也更不安全的选<br>择。</p>
+<p>（3）Rewrite</p>
+<p><code>概念</code>：AOF 采用文件追加方式，文件会越来越来大为避免出现此种情况，<br>新增了重写机制，aof 文件的大小超过所设定的阈值时，redis 就会自动将 aof文件的内容压缩，只保留可以恢复数据的最小指令集，可以使用命令<br>bgrewirteaof。</p>
+<p><code>触发机制</code>：redis 会记录上次重写的 aof 的大小，默认的配置当 aof 文件大小为上次 rewrite 后大小的一倍且文件大于 64M 触发。</p>
+<p><code>重写原理：</code>aof 文件持续增长而大时，会 fork 出一条新进程来将文件重写<br>(也就是先写临时文件最后再 rename)，遍历新进程的内存中的数据，每条记录有一条 set 语句，重写 aof 文件的操作，并没有读取旧的的 aof 文件，而是将整个内存的数据库内容用命令的方式重写了一个新的 aof 文件，这点和快照有点类似。</p>
+<blockquote>
+<p>no-appendfsync-on-rewrite no : </p>
+<p>重写时是否可以运用 Appendfsync 用默认 no 即可，保证数据安全</p>
+<p>auto-aof-rewrite-percentage 倍数  设置基准值<br>auto-aof-rewrite-min-size   设置基准值大小</p>
+</blockquote>
+<p>（4）flushall<br>刷新内存中的数据，即清空数据<br>可通过删除aof文件中该操作的记录来恢复数据<br>rdb文件无法实现数据恢复</p>
+<p>（5）aof 特点</p>
+<p>aof优点：<br>可用于数据恢复<br>缺点：<br>体积大，速度慢</p>
+<p>aof文件体积会越来越大</p>
+<p>（6）aof文件优化<br>重写：当文件大小达到一定阈值，启动压缩文件</p>
+<blockquote>
+<p>netstat -anpt<br>查看所有端口的使用情况</p>
+</blockquote>
+<h2 id="4、备份-Redis-数据"><a href="#4、备份-Redis-数据" class="headerlink" title="4、备份 Redis  数据"></a>4、备份 Redis  数据</h2><p><code>建议：</code><br>创建一个定期任务（cron job）， 每小时将一个 RDB 文件备份到一个文件<br>夹， 并且每天将一个 RDB 文件备份到另一个文件夹。<br>确保快照的备份都带有相应的日期和时间信息， 每次执行定期任务脚本<br>时， 使用 find 命令来删除过期的快照： 比如说， 你可以保留最近 48 小时<br>内的每小时快照， 还可以保留最近一两个月的每日快照。<br>至少每天一次， 将 RDB 备份到你的数据中心之外， 或者至少是备份到你<br>运行 Redis 服务器的物理机器之外。</p>
+<h1 id="六、Redis-主从复制"><a href="#六、Redis-主从复制" class="headerlink" title="六、Redis  主从复制"></a>六、Redis  主从复制</h1><h2 id="0、前情提要-1"><a href="#0、前情提要-1" class="headerlink" title="0、前情提要"></a>0、前情提要</h2><p>Redis 支持简单且易用的主从复制（master-slave replication）功能， 该功能可以让从服务器(slave server)成为主服务器(masterserver)的精确复制品 。</p>
+<h2 id="1、关于-Redis-复制功能的几个重要方面："><a href="#1、关于-Redis-复制功能的几个重要方面：" class="headerlink" title="1、关于 Redis 复制功能的几个重要方面："></a>1、关于 Redis 复制功能的几个重要方面：</h2><ul>
+<li>Redis 使用异步复制。</li>
+<li>一个主服务器可以有多个从服务器。</li>
+<li>不仅主服务器可以有从服务器， 从服务器也可以有自己的从服务器，<br>多个从服务器之间可以构成一个图状结构。</li>
+<li>复制功能不会阻塞主服务器： 即使有一个或多个从服务器正在进行初次<br>同步， 主服务器也可以继续处理命令请求。不过， 在从服务器删除旧版本数据集并载入新版本数据集的那段时间内， 连接请求会被阻塞。</li>
+<li>复制功能可以单纯地用于数据冗余（data redundancy）， 也可以通过让多个从服务器处理只读命令请求来提升扩展性（scalability）： 比如说， 繁重的 SORT 命令可以交给附属节点去运行。</li>
+</ul>
+<h2 id="2、从服务器配置"><a href="#2、从服务器配置" class="headerlink" title="2、从服务器配置"></a>2、从服务器配置</h2><p>方式一：编辑配置文件</p>
+<p>（永久生效）</p>
+<blockquote>
+<p>添加主服务器的IP</p>
+<p>slaveof 192.168.198.128 6379</p>
+</blockquote>
+<p>方式二：调用 SLAVEOF 命令，输入主服务器的 IP 和端口，然后同步就会开始</p>
+<p><code>前提：</code>主从服务器的redis-server均启动了</p>
+<p>（仅适用于当前线程的服务，同步时，会将自己原来的key值数据清空，并且在主服务器页面会显示关于从服务器的日志信息）</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; SLAVEOF 192.168.198.128 6379</p>
+</blockquote>
+<p>若想取消该服务器的主从关系，使用如下命令，且还会保存当前数据</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; SLAVEOF no one</p>
+</blockquote>
+<p>连接远程节点的redis服务（端口默认为6379）</p>
+<blockquote>
+<p>redis-cli -h 192.168.198.128 </p>
+</blockquote>
+<h2 id="3、只读服务器"><a href="#3、只读服务器" class="headerlink" title="3、只读服务器"></a>3、只读服务器</h2><p>从 Redis 2.6 开始， 从服务器支持<code>只读模式</code>， 并且该模式为从服务器的默认模式。<br>  只读模式配置</p>
+<blockquote>
+<p>方式一：由 redis.conf 文件中的 slave-read-only 选项控制</p>
+<p>slave-read-only yes</p>
+<p>方式二：通过 CONFIG SET 命令来开启或关闭这个模式</p>
+</blockquote>
+<p>  只读从服务器会拒绝执行任何写命令， 所以不会出现因为操作失误而将数据不小心写入到了从服务器的情况。</p>
+<p>  另外，对一个从属服务器执行命令 SLAVEOF NO ONE 将使得这个从属服务器关闭复制功能，并从从属服务器转变回主服务器，原来同步所得的数据集不会被丢弃。</p>
+<p>  利用『 SLAVEOF NO ONE 不会丢弃同步所得数据集』这个特性，可以在主服务器失败的时候，将从属服务器用作新的主服务器，从而实现无间断运行。</p>
+<h2 id="4、从服务器相关配置："><a href="#4、从服务器相关配置：" class="headerlink" title="4、从服务器相关配置："></a>4、从服务器相关配置：</h2><p>设置密码：</p>
+<p>​     主服务器：</p>
+<blockquote>
+<p>通过 requirepass 选项设置密码</p>
+</blockquote>
+<p>​     从服务器：</p>
+<p>方式一：</p>
+<blockquote>
+<p>服务器正在运行，使用客户端输入以下命令：<br>config set masterauth <password></password></p>
+</blockquote>
+<p>方式二：</p>
+<blockquote>
+<p>将它加入到配置文件中：<br>masterauth <password></password></p>
+</blockquote>
+<h2 id="5、主服务器配置"><a href="#5、主服务器配置" class="headerlink" title="5、主服务器配置"></a>5、主服务器配置</h2><p>只在有至少 N  个从服务器的情况下，才执行写操作</p>
+<p>从 Redis 2.8 开始， 为了保证数据的安全性，可以通过配置， 让主服务器只在有至少 N 个当前已连接从服务器的情况下， 才执行写命令。</p>
+<blockquote>
+<p>min-slaves-to-write <number of slaves><br>min-slaves-max-lag <number of seconds></number></number></p>
+</blockquote>
+<p>至少有 min-slaves-to-write 个从服务器， 并且这些服务器的延迟值都少于 min-slaves-max-lag 秒， 那么主服务器就会执行客户端请求的写操作。</p>
+<h1 id="七、Redis-sentinel-哨兵"><a href="#七、Redis-sentinel-哨兵" class="headerlink" title="七、Redis-sentinel( 哨兵)"></a>七、Redis-sentinel( 哨兵)</h1><h2 id="0、前情提要-2"><a href="#0、前情提要-2" class="headerlink" title="0、前情提要"></a>0、前情提要</h2><p>Redis 的 Sentinel 系统用于管理多个 Redis 服务器，该系统执行以下三个任务：</p>
+<ul>
+<li><p>监控（Monitoring）： Sentinel 会不断地检查你的主服务器和从服务器是否运作正常。</p>
+</li>
+<li><p>提醒（Notification）： 当被监控的某个 Redis 服务器出现问题时，Sentinel 可以通过 API 向管理员或者其他应用程序发送通知。</p>
+</li>
+<li><p>自动故障迁移（Automatic failover）： 当一个主服务器不能正常工作时， Sentinel 会开始一次自动故障迁移操作， 它会将失效主服务器的其中一个从服务器升级为新的主服务器， 并让失效主服务器的其他从服务器改为复制新的主服务器； 当客户端试图连接失效的主服务器时，集群也会向客户端返回新主服务器的地址， 使得集群可以使用新主服务器代替失效服务器。</p>
+</li>
+<li><p>Redis Sentinel 是一个分布式系统，你可以在一个架构中运行多个 Sentinel 进程， 这些进程使用流言协议（gossipprotocols)来接收关于主服务器是否下线的信息， 并使用投票协议（agreement protocols）来决定是否执行自动故障迁移，以及选择哪个从服务器作为新的主服务器。</p>
+</li>
+</ul>
+<h2 id="1、启动-Sentinel"><a href="#1、启动-Sentinel" class="headerlink" title="1、启动 Sentinel"></a>1、启动 Sentinel</h2><p>方式一：</p>
+<p>对于 redis-sentinel 程序， 可以用以下命令来启动Sentinel 系统：</p>
+<blockquote>
+<p>redis-sentinel  /path/to/sentinel.conf</p>
+</blockquote>
+<p>方式二：</p>
+<p>对于 redis-server 程序， 你可以用以下命令来启动一个运行在 Sentinel 模式下的 Redis 服务器：</p>
+<blockquote>
+<p>redis- - server /path/to/sentinel.conf  – sentinel</p>
+</blockquote>
+<p><code>注意：</code></p>
+<blockquote>
+<p>启动 Sentinel 实例必须指定相应的配置文件， 系统会使用配置文件来保存 Sentinel 的当前状态， 并在 Sentinel 重启时通过载入配置文件来进行状态还原。如果启动 Sentinel 时没有指定相应的配置文件， 或者指定的配置文件不可写（not writable）， 那么 Sentinel 会拒绝启动。</p>
+</blockquote>
+<h2 id="2-、配置-Sentinel"><a href="#2-、配置-Sentinel" class="headerlink" title="2  、配置 Sentinel"></a>2  、配置 Sentinel</h2><p>Redis 源码中包含了一个名为 sentinel.conf 的文件，这个文件是一个带有详细注释的 Sentinel 配置文件示例。<br>运行一个 Sentinel 所需的最少配置如下所示：</p>
+<pre><code>sentinel monitor mymaster  192.168.198.128 6379 2 
+sentinel down-after-milliseconds mymaster 30000
+sentinel failover-timeout mymaster 180000
+sentinel parallel-syncs mymaster 1
+protected-mode no / bind  本机  IP</code></pre>
+<p><code>注意：</code>主服务器无密码时，记得在 sentinel 配置里配上bind 本机 ip ，或者关掉保护模式 protected-mode no</p>
+<p><code>配置解释：</code></p>
+<blockquote>
+<p>第一行配置指示 Sentinel 去监视一个名为 mymaster 的主服务器， 这个主服务器的 IP 地址为 127.0.0.1 ， 端口号为 6379 ， 而将这个主服务器判断为失效至少需要 2 个Sentinel 同意 （只要同意 Sentinel 的数量不达标，自动故障迁移就不会执行）。</p>
+</blockquote>
+<blockquote>
+<p>down-after-milliseconds 选项</p>
+<p>指定了 Sentinel 认为服务器已经断线所需的毫秒数。</p>
+<p>如果服务器在给定的毫秒数之内， 没有返回 Sentinel发送的 PING 命令的回复， 或者返回一个错误， 那么 Sentinel 将这个服务器标记为主观下线</p>
+</blockquote>
+<blockquote>
+<p>parallel-syncs 选项指定了在执行故障转移时， 最多可以有多少个从服务器同时对新的主服务器进行同步， 这个数字越小， 完成故障转移所需的时间就越长。</p>
+<p>你可以通过将这个值设为 1 来保证每次只有一个从服务器处于不能处理命令请求的状态。</p>
+</blockquote>
+<h1 id="八、Redis集群"><a href="#八、Redis集群" class="headerlink" title="八、Redis集群"></a>八、Redis集群</h1><h2 id="1-集群简介"><a href="#1-集群简介" class="headerlink" title="1  集群简介"></a>1  集群简介</h2><p>Redis 集群可以在多个 Redis 节点之间进行数据共享；</p>
+<p>Redis 集群不支持那些需要同时处理多个键的 Redis 命令；</p>
+<p>因为执行这些命令需要在多个 Redis 节点之间移动数据， 并且在高负载的情况下， 这些命令将降低 Redis 集群的性能， 并导致不可预测的行为。比如：有 name1 和 name2 两个节点，命令 del name1 name2 要同时删除这个 key,就不能写在一起，得<br>分开写。</p>
+<p>Redis 集群通过分区（partition）来提供一定程度的可用性（availability）： 即使集群中有一部分节点失效或者无法进行通讯， 集群也可以继续处理命令请求。</p>
+<p>Redis 集群提供了以下两个好处：</p>
+<ul>
+<li>将数据自动切分（split）到多个节点的能力。</li>
+<li>当集群中的一部分节点失效或者无法进行通讯时， 仍然可以继续处理命令请求的能力。</li>
+</ul>
+<h2 id="2-集群数据共享"><a href="#2-集群数据共享" class="headerlink" title="2  集群数据共享"></a>2  集群数据共享</h2><p>Redis 集群使用数据分片（sharding）而非一致性哈希来实现： 一个 Redis 集群包含 16384 个哈希槽（hash slot），数据库中的每个键都属于这 16384 个哈希槽的其中一个， 集群使用公式 CRC16(key) % 16384 来计算键 key 属于哪个槽， 其中 CRC16(key) 语句用于计算键 key 的 CRC16校验和 。</p>
+<p>集群中的每个节点负责处理一部分哈希槽。 </p>
+<p>举个例子， 一个集群可以有三个哈希槽， 其中：<br> 节点 A 负责处理 0 号至 5500 号哈希槽。<br> 节点 B 负责处理 5501 号至 11000 号哈希槽。<br> 节点 C 负责处理 11001 号至 16384 号哈希槽。</p>
+<p>这种将哈希槽分布到不同节点的做法使得用户可以很容易地向集群中添加或者删除节点。 比如说：<br> 如果用户将新节点 D 添加到集群中， 那么集群只需要将节点A 、B 、 C 中的某些槽移动到节点 D 就可以了。<br> 与此类似， 如果用户要从集群中移除节点 A ， 那么集群只需要将节点 A 中的所有哈希槽移动到节点 B 和节点 C ， 然后再移除空白（不包含任何哈希槽）的节点 A 就可以了。因为将一个哈希槽从一个节点移动到另一个节点不会造成节点阻塞， 所以无论是添加新节点还是移除已存在节点， 又或者改变某个节点包含的哈希槽数量， 都不会造成集群下线。</p>
+<p>3  集群的主从复制：<br>为了使得集群在一部分节点下线或者无法与集群的大多数节<br>点进行通讯的情况下， 仍然可以正常运作， Redis 集群对节点<br>使用了主从复制功能： 集群中的每个节点都有 1 个至 N 个复制<br>品，其中一个复制品为主节点， 而其余的 N-1 个复制品为从<br>节点。<br>在之前列举的节点 A 、B 、C 的例子中， 如果节点 B 下线<br>了， 那么集群将无法正常运行， 因为集群找不到节点来处理<br>5501 号至 11000 号的哈希槽。<br>另一方面， 假如在创建集群的时候（或者至少在节点 B 下<br>线之前）， 我们为主节点 B 添加了从节点 B1 ， 那么当主节点<br>B 下线的时候， 集群就会将 B1 设置为新的主节点， 并让它代</p>
+<h2 id="5-集群搭建"><a href="#5-集群搭建" class="headerlink" title="5  集群搭建"></a>5  集群搭建</h2><p>要让集群正常运作至少需要 3 个主节点， 不过在刚开始试用集群功能时， 强烈建议使用六个节点：</p>
+<p>其中三个为主节点，而其余三个则是各个主节点的从节点。<br>集群规划：3 个主节点，3 个从节点。<br>配置文件：</p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">port</span> <span class="token attr-value">7000</span>
+<span class="token comment" spellcheck="true">##cluster-enabled 选项用于开实例的集群模式</span>
+<span class="token attr-name">cluster-enabled</span> <span class="token attr-value">yes</span>
+<span class="token comment" spellcheck="true">##cluster-conf-file 选项则设定了保存节点配置文件的路</span>
+<span class="token comment" spellcheck="true">##径， 默认值为 nodes.conf</span>
+<span class="token attr-name">cluster-config-file</span> <span class="token attr-value">nodes.conf</span>
+<span class="token attr-name">cluster-node-timeout</span> <span class="token attr-value">5000</span>
+<span class="token attr-name">appendonly</span> <span class="token attr-value">yes</span>
+<span class="token attr-name">daemonize</span> <span class="token attr-value">yes</span>
+<span class="token attr-name">protected-mode</span> <span class="token attr-value">no</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>Title:</span><a href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">Sukie</a></p>
+        <p><span>Created:</span>2019-02-14, 00:00:00</p>
+        <p><span>Updated:</span>2020-08-07, 21:07:21</p>
+        <p>
+            <span>Full URL:</span><a class="post-url" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/" title="Redis学习">https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/</a>
+            <span class="copy-path" data-clipboard-text="From https://sukie-sun.github.io/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/　　By Sukie" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">
+                    Scala学习
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">
+                    Storm学习
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Redis%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">一、Redis的简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">1、前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E7%94%A8%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%81%E7%BC%93%E5%AD%98%E5%92%8C%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">2、用作数据库、缓存和消息中间件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Redis%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">二、Redis的特点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%B0%E5%AF%8C"><span class="toc-number">2.1.</span> <span class="toc-text">1、数据结构丰富</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E6%95%B0%E6%8D%AE%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">2、数据的持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%87%E4%BB%BD"><span class="toc-number">2.3.</span> <span class="toc-text">3、数据的备份</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Redis%E7%9A%84%E5%AE%89%E8%A3%85"><span class="toc-number">3.</span> <span class="toc-text">三、Redis的安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85%E5%8C%85"><span class="toc-number">3.1.</span> <span class="toc-text">1、下载安装包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E4%BE%9D%E8%B5%96%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.</span> <span class="toc-text">2、依赖软件安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E8%A7%A3%E5%8E%8B-redis"><span class="toc-number">3.3.</span> <span class="toc-text">3、解压 redis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81-%E6%89%A7%E8%A1%8C-%E7%BC%96%E8%AF%91%E5%91%BD%E4%BB%A4"><span class="toc-number">3.4.</span> <span class="toc-text">4、 执行 编译命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E4%BF%AE%E6%94%B9-redis-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.5.</span> <span class="toc-text">5、修改 redis 的配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E5%90%AF%E5%8A%A8server%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.6.</span> <span class="toc-text">6、启动server服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7%E3%80%81%E5%90%AF%E5%8A%A8%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.7.</span> <span class="toc-text">7、启动客户端服务</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Redis%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">四、Redis的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">4.1.</span> <span class="toc-text">0、前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%88%87%E6%8D%A2%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%88%E5%AE%9E%E4%BE%8B%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">1、切换数据库（实例）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Key%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="toc-number">4.3.</span> <span class="toc-text">2、Key操作：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81String-%E6%93%8D%E4%BD%9C"><span class="toc-number">4.4.</span> <span class="toc-text">3、String  操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81-List-%E6%93%8D%E4%BD%9C"><span class="toc-number">4.5.</span> <span class="toc-text">4、 List 操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81Set%E6%93%8D%E4%BD%9C"><span class="toc-number">4.6.</span> <span class="toc-text">5、Set操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81Sorted-set%E6%93%8D%E4%BD%9C"><span class="toc-number">4.7.</span> <span class="toc-text">6、Sorted set操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7%E3%80%81-Hash-%E6%93%8D%E4%BD%9C-%EF%BC%88%E6%95%A3%E5%88%97%EF%BC%89"><span class="toc-number">4.8.</span> <span class="toc-text">7、 Hash  操作  （散列）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81Redis-%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">五、Redis 的持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81Redis-%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">1、Redis  持久化方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Rdb"><span class="toc-number">5.2.</span> <span class="toc-text">2、Rdb:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81AOF"><span class="toc-number">5.3.</span> <span class="toc-text">3、AOF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%A4%87%E4%BB%BD-Redis-%E6%95%B0%E6%8D%AE"><span class="toc-number">5.4.</span> <span class="toc-text">4、备份 Redis  数据</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81Redis-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">6.</span> <span class="toc-text">六、Redis  主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81-1"><span class="toc-number">6.1.</span> <span class="toc-text">0、前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%85%B3%E4%BA%8E-Redis-%E5%A4%8D%E5%88%B6%E5%8A%9F%E8%83%BD%E7%9A%84%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81%E6%96%B9%E9%9D%A2%EF%BC%9A"><span class="toc-number">6.2.</span> <span class="toc-text">1、关于 Redis 复制功能的几个重要方面：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">6.3.</span> <span class="toc-text">2、从服务器配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%8F%AA%E8%AF%BB%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">6.4.</span> <span class="toc-text">3、只读服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE%EF%BC%9A"><span class="toc-number">6.5.</span> <span class="toc-text">4、从服务器相关配置：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">6.6.</span> <span class="toc-text">5、主服务器配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81Redis-sentinel-%E5%93%A8%E5%85%B5"><span class="toc-number">7.</span> <span class="toc-text">七、Redis-sentinel( 哨兵)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0%E3%80%81%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81-2"><span class="toc-number">7.1.</span> <span class="toc-text">0、前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%90%AF%E5%8A%A8-Sentinel"><span class="toc-number">7.2.</span> <span class="toc-text">1、启动 Sentinel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E3%80%81%E9%85%8D%E7%BD%AE-Sentinel"><span class="toc-number">7.3.</span> <span class="toc-text">2  、配置 Sentinel</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81Redis%E9%9B%86%E7%BE%A4"><span class="toc-number">8.</span> <span class="toc-text">八、Redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4%E7%AE%80%E4%BB%8B"><span class="toc-number">8.1.</span> <span class="toc-text">1  集群简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9B%86%E7%BE%A4%E6%95%B0%E6%8D%AE%E5%85%B1%E4%BA%AB"><span class="toc-number">8.2.</span> <span class="toc-text">2  集群数据共享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-number">8.3.</span> <span class="toc-text">5  集群搭建</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
+
+    <script>
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Redis学习　| Sukie's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+	  <section id="comments" style="margin: 2em; padding: 2em; background: rgba(255, 255, 255, 0.5)">
+    <div id="vcomment" class="comment"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js"></script>
+    <script>
+      new Valine({
+        el: '#vcomment',
+        notify: 'true',
+        verify: 'true',
+        app_id: "qha2YfPRUR6IN1LfnbliYqay-gzGzoHsz",
+        app_key: "b00TckRiHRVQphnJwuFp9isO",
+        placeholder: "Just go go!",
+        avatar: "mp"
+      });
+    </script>
+</section>	  
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/" title="Pre: Scala学习">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/" title="Next: Storm学习">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/08/hello-world/">Hello World</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Spark(6)/">Spark学习（六）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/Spark(5)/">Spark学习（五）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/Spark(4)/">Spark学习（四）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/Spark(3)/">Spark学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/17/Spark(2)/">Spark学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Spark(1)/">Spark学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/List%E6%96%B9%E6%B3%95/">List方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Map%E6%96%B9%E6%B3%95/">Map方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Set%E6%96%B9%E6%B3%95/">Set方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/String%E6%96%B9%E6%B3%95/">String 方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">面试问题总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95/">数组方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">Scala学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">Storm学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/28/Kafka%E5%AD%A6%E4%B9%A0/">Kafka学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/25/Elasticsearch%E5%AD%A6%E4%B9%A0/">Elasticsearch学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/CDH%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0/">CDH部署操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/Flume%E5%AD%A6%E4%B9%A0/">Flume学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">HBase性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">Sqoop学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84UDF%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/">Hive中常用的UDF函数总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%BC%98%E5%8C%96/">Hive优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/11/Hive%E5%AD%A6%E4%B9%A0/">Hive学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/MapReduce%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">MapReduce源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/07/MapReduce%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">MapReduce案例实践</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/05/MapReduce%E5%AD%A6%E4%B9%A0/">MapReduce学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Zookeeper%E5%AD%A6%E4%B9%A0/">Zookeeper学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Yarn%E5%AD%A6%E4%B9%A0/">YARN的入门学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Hadoop2.X/">Hadoop2.X</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/HDFS%E5%AD%A6%E4%B9%A0/">HDFS学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A02/">Nginx入门学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A01/">Nginx入门学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/30/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%80%9D%E6%83%B3/">大数据思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A03/">常用Linux命令的学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">常用Linux命令的学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">Linux系统数据库MySQL安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/Linux%E7%B3%BB%E7%BB%9FCentOS%206%E5%AE%89%E8%A3%85/">Linux学习之CentOS 6系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85maven%E5%9D%90%E6%A0%87%E4%BE%9D%E8%B5%96/">手动安装maven坐标依赖</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/hexo/">Hexo搭建个人博客</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2020 Sukie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+
+    </div>
+    
+    
+<script src="/js/GithubRepoWidget.js"></script>
+
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var iPad = window.navigator.userAgent.indexOf('iPad');
+      if (iPad > -1) {
+        let bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+        let bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+        $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+      } else if ($(".left-col").css("display") === "none") {
+        $("body").css({
+          "background-image": "url(/background/mobile.jpg)",
+          "background-repeat": "no-repeat",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      } else {
+        var backgroundnum = 5;
+        var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+        $("body").css({
+          "background": backgroundimg,
+          "background-position": "0% 80%",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      }
+    })
+  </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+             github: ".github-widget a", 
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+            
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script src="/js/busuanzi_pure_mini.js"></script>
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?6b4caaf6c3a0542e82c2abbce9da41cc"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"live2d_models/live2d-widget-model-chitose"},"display":{"position":"right","width":250,"height":350,"hOffset":-50,"vOffset":-85},"mobile":{"show":false},"react":{"opacityDefault":0.9,"opacityOnHover":0.3}});</script></body>
+</html>

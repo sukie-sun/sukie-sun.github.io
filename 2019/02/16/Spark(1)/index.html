@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="Sukie" />
+
+
+
+<meta name="description" content="Spark的详细学习第一篇章:Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习（一）">
+<meta property="og:url" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/index.html">
+<meta property="og:site_name" content="Sukie&#39;s Blog">
+<meta property="og:description" content="Spark的详细学习第一篇章:Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/mr.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/mr1.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/spark.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/rdd1.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/rdd.jpg">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/Spark任务执行原理.png">
+<meta property="og:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/Spark任务执行原理0.png">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/005zftzDgy1g098pwwdc9j30f70aztbu.jpg">
+<meta property="article:published_time" content="2019-02-16T13:30:15.000Z">
+<meta property="article:modified_time" content="2020-08-09T11:28:45.803Z">
+<meta property="article:author" content="Sukie">
+<meta property="article:tag" content="计算引擎">
+<meta property="article:tag" content="基于内存">
+<meta property="article:tag" content="RDD算子">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sukie-sun.github.io/2019/02/16/Spark(1)/mr.jpg">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Sukie&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Spark学习（一） | Sukie&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src=""></script>
+<script src=""></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.0.0"><link rel="stylesheet" href="/css/prism-a11y-dark.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">Sukie</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">你好，新世界、新编程</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>Menu</li>
+                        <li>Tags</li>
+                        
+                        <li>Friends</li>
+                        
+                        
+                        <li>About Me</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/essays/">随笔</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                            <li><a href="/logs/">更新日志</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-6/" rel="tag">CentOS 6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/" rel="tag">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HDFS/" rel="tag">HDFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive/" rel="tag">Hive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag">Linux命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83/" rel="tag">Linux系统环境</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/List/" rel="tag">List</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MapReduce/" rel="tag">MapReduce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark-shell/" rel="tag">Spark shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkSql/" rel="tag">SparkSql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkStreaming/" rel="tag">SparkStreaming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SparkUI/" rel="tag">SparkUI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark%E6%A1%86%E6%9E%B6/" rel="tag">Spark框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sqoop/" rel="tag">Sqoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Storm%EF%BC%8C%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">Storm，流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/String/" rel="tag">String</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zookeeper/" rel="tag">Zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/" rel="tag">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/" rel="tag">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sparkcore%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" rel="tag">sparkcore应用案例</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yarn/" rel="tag">yarn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag">不同数据源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AA%E4%BA%BA%E5%85%B4%E8%B6%A3/" rel="tag">个人兴趣</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%9C%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E/" rel="tag">分布式搜索和分析引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%A6%BB%E7%BA%BF%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">分布式离线计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B/" rel="tag">分而治之</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%81%E8%A3%85RDD/" rel="tag">封装RDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%BF%E6%92%AD/" rel="tag">广播</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6/" rel="tag">流式处理框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F/" rel="tag">消息队列系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%AF%E5%8A%A0%E5%99%A8/" rel="tag">累加器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag">编程语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6/" rel="tag">计算框架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81/" rel="tag">静态</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" target="_blank" rel="noopener" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">新世界编程</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Sukie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">Sukie</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">你好，新世界、新编程</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/essays/">随笔</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                    <li><a href="/logs/">更新日志</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:123@123.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
+</nav>
+      <div class="body-wrap"><article id="post-Spark(1)" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/02/16/Spark(1)/" class="article-date">
+      <time datetime="2019-02-16T13:30:15.000Z" itemprop="datePublished">2019-02-16</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spark学习（一）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Spark/">Spark</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud" style="display: flex; flex-wrap: wrap">  
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RDD%E7%AE%97%E5%AD%90/" rel="tag">RDD算子</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98/" rel="tag">基于内存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E/" rel="tag">计算引擎</a></li></ul>
+		<span class="post-count">总字数3.4k</span>
+		<span class="post-count">预计阅读14分钟</span>		  
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+		  
+			
+		
+        <hr>
+<h1 id="一、Spark简介"><a href="#一、Spark简介" class="headerlink" title="一、Spark简介"></a>一、Spark简介</h1><h2 id="1、什么是Spark？"><a href="#1、什么是Spark？" class="headerlink" title="1、什么是Spark？"></a>1、什么是Spark？</h2><blockquote>
+<p>Lightning-fast unified analytics engine</p>
+<p>Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。</p>
+</blockquote>
+<p>用于逻辑回归算法：</p>
+<p>快速(100倍)：能更好的的适用于数据挖掘与机器学习等需要迭代的算法（在计算结果的基础上再计算）；Job的中间结果值在内存中流转，不需要读取HDFS，屏蔽磁盘开销；DAG调度</p>
+<p>mr：离线，（迭代时：磁盘IO，较慢）</p>
+<p>storm：流式</p>
+<blockquote>
+<p>Spark是用Scala编写的，方便快速编程</p>
+</blockquote>
+<h2 id="2、与MapReduce的区别"><a href="#2、与MapReduce的区别" class="headerlink" title="2、与MapReduce的区别"></a>2、与MapReduce的区别</h2><ul>
+<li>MapReduce</li>
+</ul>
+<div align="center"><img src="/2019/02/16/Spark(1)/mr.jpg" align="middle" alt="MapReduce底层原理"></div>
+
+
+
+<div align="center"><img src="/2019/02/16/Spark(1)/mr1.jpg" align="middle" alt="MapeduceIO原理"></div>
+
+<ul>
+<li>Spark</li>
+</ul>
+<div align="center"><img src="/2019/02/16/Spark(1)/spark.jpg" align="middle" alt="SparkIO原理"></div>
+
+<p>区别：</p>
+<blockquote>
+<p>同：分布式计算框架</p>
+<p>不同：</p>
+<ul>
+<li>Spark基于内存，MR基于HDFS</li>
+<li>Spark处理数据的能力是MR的十倍以上</li>
+<li>Spark除了基于内存计算之外，还有DAG有向无环图来切分任务的执行顺序</li>
+</ul>
+</blockquote>
+<p>Spark API  的使用语言</p>
+<blockquote>
+<p>Scala（很好）<br>Python(不错)<br>Java(…)</p>
+</blockquote>
+<h2 id="3、Spark运行模式"><a href="#3、Spark运行模式" class="headerlink" title="3、Spark运行模式"></a>3、Spark运行模式</h2><ul>
+<li>local</li>
+</ul>
+<p>多用于本地测试，如在 eclipse，idea 中写程序测试</p>
+<ul>
+<li>standalone</li>
+</ul>
+<p>standalone是Spark自带的资源调度框架，它支持完全分布式</p>
+<ul>
+<li>yarn</li>
+</ul>
+<p>Hadoop生态圈的资源调度框架，Spark也是可以基于yarn来计算的</p>
+<blockquote>
+<p>基于yarn来进行资源调度，必须实现ApplicationMaster接口，Spark实现的这个接口，所以可以使用</p>
+</blockquote>
+<ul>
+<li>mesos</li>
+</ul>
+<p>资源调度框架</p>
+<h1 id="二、Sparkcore"><a href="#二、Sparkcore" class="headerlink" title="二、Sparkcore"></a>二、Sparkcore</h1><h2 id="1、RDD"><a href="#1、RDD" class="headerlink" title="1、RDD"></a>1、RDD</h2><h3 id="（1）概念："><a href="#（1）概念：" class="headerlink" title="（1）概念："></a>（1）概念：</h3><p>RDD(Resilient Distributed Dateset)弹性分布式数据集</p>
+<h3 id="（2）五大特性"><a href="#（2）五大特性" class="headerlink" title="（2）五大特性"></a>（2）五大特性</h3><blockquote>
+<ol>
+<li>RDD 是由一系列的 partition 组成的。</li>
+<li>函数是作用在每一个 partition（split）上的。</li>
+<li>RDD 之间有一系列的依赖关系。</li>
+<li>分区器是作用在 K,V 格式的 RDD 上。</li>
+<li>RDD 提供一系列最佳的计算位置。</li>
+</ol>
+</blockquote>
+<blockquote>
+<ul>
+<li><code>获取RDD的方式</code></li>
+<li>parallelize()</li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//Distribute a local Scala collection to form an RDD</span>
+JavaRDD<span class="token operator">&lt;</span>T<span class="token operator">></span> rdd <span class="token operator">=</span> javaSparkContext<span class="token punctuation">.</span><span class="token function">parallelize</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> list<span class="token punctuation">)</span>；
+JavaRDD<span class="token operator">&lt;</span>T<span class="token operator">></span> rdd <span class="token operator">=</span> javaSparkContext<span class="token punctuation">.</span><span class="token function">parallelize</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> list<span class="token punctuation">,</span><span class="token keyword">int</span> numSlices<span class="token punctuation">)</span>；    
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>parallelizePairs</li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//Distribute a local Scala collection to form an RDD</span>
+JavaPairRDD<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> rdd <span class="token operator">=</span> 
+     javaSparkContext<span class="token punctuation">.</span><span class="token function">parallelizePairs</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Tuple2<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">>></span> list<span class="token punctuation">)</span>；     
+JavaPairRDD<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> rdd <span class="token operator">=</span> 
+     javaSparkContext<span class="token punctuation">.</span><span class="token function">parallelizePairs</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Tuple2<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">>></span> list<span class="token punctuation">,</span><span class="token keyword">int</span> numSlices<span class="token punctuation">)</span>；<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>textFile(“./xx.txt”)   也可指定分区</li>
+</ul>
+</blockquote>
+<h3 id="（3）RDD理解图"><a href="#（3）RDD理解图" class="headerlink" title="（3）RDD理解图"></a>（3）RDD理解图</h3><div align="center"><img src="/2019/02/16/Spark(1)/rdd1.jpg" align="middle" alt="rdd1原理"></div>
+
+
+
+<p><code>理论注解</code></p>
+<blockquote>
+<ul>
+<li><p>RDD  实际上不存储数据，这里方便理解，暂时理解为存储数据。</p>
+</li>
+<li><p>textFile 方法底层封装的是MR 读取文件的方式(先 split,再读取文件)，默认 split 大小是一个 block 大小。</p>
+</li>
+<li><p>RDD 提供计算最佳位置，体现了数据本地化。体现了大数据中“计算移动数据不移动”的理念。</p>
+</li>
+</ul>
+<p>❔  哪里体现 RDD 的分布式？</p>
+<p>👆  RDD 是由 Partition 组成，partition 是分布在不同节点上的。</p>
+<p>❔  哪里体现 RDD 的弹性（容错）？</p>
+<p>👆 partition 数量，大小没有限制,默认和split（block）一致，体现了 RDD 的弹性。<br>👆 RDD 之间依赖关系，可以基于上一个 RDD 重新计算出 RDD。</p>
+<p>❔  什么是 K,V 格式的 RDD?</p>
+<p>👆 如果 RDD 里面存储的数据都是二元组对象，那么这个 RDD 我们就叫做 K,V 格式的 RDD。</p>
+<p>👆 MR有分区器（根据key值求hash，来决定数据存放在哪个分区中，所以分区器必须作用在K，V格式的RDD上）</p>
+</blockquote>
+<div align="center"><img src="/2019/02/16/Spark(1)/rdd.jpg" align="middle" alt="rdd关系"></div>
+
+<h2 id="2、Spark任务执行原理"><a href="#2、Spark任务执行原理" class="headerlink" title="2、Spark任务执行原理"></a>2、Spark任务执行原理</h2><div align="center"><img src="/2019/02/16/Spark(1)/Spark任务执行原理.png" align="middle" alt="Spark任务执行原理"></div>
+
+<div align="center"><img src="/2019/02/16/Spark(1)/Spark任务执行原理0.png" align="middle" alt="Spark任务执行原理"></div>
+
+
+
+<p>Driver：（相当于ApplicationMaster）</p>
+<p>Worker：（相当于NodeManager）</p>
+<p>以上图中有四个机器节点，</p>
+<p>Driver 和 Worker 是启动在节点上的进程，<br>运行在 JVM 中的进程。<br> Driver 与集群节点之间有频繁的通信。<br> Driver：任务的调度（监控任务、 负责任务(tasks)的分发和结果的回收）。如果 task<br>的计算结果非常大就不要回收了。会造成 oom。<br> Worker 是 Standalone 资源调度框架里面资源管理的从节点。也是JVM 进程。<br> Master 是 Standalone 资源调度框架里面资源管理的主节点。也是JVM 进程。</p>
+<h2 id="3、Spark代码流程"><a href="#3、Spark代码流程" class="headerlink" title="3、Spark代码流程"></a>3、Spark代码流程</h2><h3 id="以用Scala编写WordCount为例"><a href="#以用Scala编写WordCount为例" class="headerlink" title="以用Scala编写WordCount为例"></a><code>以用Scala编写WordCount为例</code></h3><p>1、创建 SparkConf 对象<br> 可以设置 Application name。<br> 可以设置运行模式及资源需求。</p>
+<pre class="line-numbers language-scala"><code class="language-scala"> <span class="token keyword">val</span> conf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token comment" spellcheck="true">/**
+          * 几种运行方式：
+          *   1.本地运行
+          *   2.yarn
+          *   3.standalone
+          *   4.mesos
+          */</span>
+  conf<span class="token punctuation">.</span>setMaster<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppName<span class="token punctuation">(</span><span class="token string">"wc"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>2、创建 SparkContext 对象</p>
+<pre class="line-numbers language-scala"><code class="language-scala"> <span class="token keyword">val</span>  context <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span>conf<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>3、基于 Spark 的上下文创建一个 RDD，对 RDD 进行处理。</p>
+<pre class="line-numbers language-scala"><code class="language-scala"><span class="token comment" spellcheck="true">//获取文件中每一行数据的ADD</span>
+ <span class="token keyword">val</span> lineADD <span class="token operator">=</span> context<span class="token punctuation">.</span>textFile<span class="token punctuation">(</span><span class="token string">"./wc.txt"</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//获取每一行数据按空格切分后的ADD</span>
+ <span class="token keyword">val</span> wordADD <span class="token operator">=</span> lineADD<span class="token punctuation">.</span>flatMap<span class="token punctuation">(</span>x<span class="token keyword">=></span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>x<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//获取每个单词加上,1 后的ADD（K,V格式）</span>
+ <span class="token keyword">val</span> KVADD <span class="token operator">=</span> wordADD<span class="token punctuation">.</span>map<span class="token punctuation">(</span>x<span class="token keyword">=></span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//获取将相同key的value相加后的ADD（K,V格式），相当于Tuple2</span>
+ <span class="token keyword">val</span> resultADD <span class="token operator">=</span> KVADD<span class="token punctuation">.</span>reduceByKey<span class="token punctuation">(</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span>y<span class="token punctuation">)</span><span class="token keyword">=></span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>x<span class="token operator">+</span>y<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//降序排序</span>
+ <span class="token keyword">val</span> sortADD <span class="token operator">=</span> resultADD<span class="token punctuation">.</span>sortBy<span class="token punctuation">(</span>_<span class="token punctuation">.</span>_2<span class="token punctuation">,</span><span class="token boolean">false</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>4、应用程序中要有 Action 类算子来触发 Transformation 类算子执行。</p>
+<pre class="line-numbers language-scala"><code class="language-scala">sortADD<span class="token punctuation">.</span>foreach<span class="token punctuation">(</span>println<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>5、关闭 Spark 上下文对象 SparkContext。</p>
+<pre class="line-numbers language-scala"><code class="language-scala">context<span class="token punctuation">.</span>stop<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="4、Transformations-转换算子"><a href="#4、Transformations-转换算子" class="headerlink" title="4、Transformations 转换算子"></a>4、Transformations 转换算子</h2><h3 id="（1）概念"><a href="#（1）概念" class="headerlink" title="（1）概念"></a>（1）概念</h3><p>Transformations 类算子是一类算子（函数）叫做转换算子，如map,flatMap,reduceByKey 等。Transformations 算子是延迟执行，也叫懒加载执行。</p>
+<blockquote>
+<p>有action触发算子任务才能提交，才会执行runjob</p>
+<p>算子必须作用在RDD上</p>
+</blockquote>
+<h3 id="（2）Transformation-类算子"><a href="#（2）Transformation-类算子" class="headerlink" title="（2）Transformation 类算子"></a>（2）Transformation 类算子</h3><blockquote>
+<p>:arrow_up_small: <strong>filter</strong><br>过滤符合条件的记录数，true 保留，false 过滤掉。</p>
+<p>🔼 <strong>contains</strong></p>
+<p>作为条件，是否包含，返回true|false</p>
+</blockquote>
+<blockquote>
+<p>:arrow_up_small:<strong>map</strong><br>将一个 RDD 中的每个数据项，通过 map 中的函数映射变为一个新的元素。<br>特点：输入一条，输出一条数据。</p>
+<p>:black_joker: <strong>mapToPair</strong>   (Java)</p>
+<p>将RDD（如lineRDD）转换成二元组</p>
+<p>🃏 <strong>mapValues</strong></p>
+<p>操作（K,V）RDD中的value     返回Tuple2&lt;&gt;</p>
+<p>:arrow_up_small: <strong>flatMap</strong><br>先 map 后 flat。与 map 类似，每个输入项可以映射为 0 到多个输出项。</p>
+<p>🔼 <strong>mapPartition</strong></p>
+<p>与 map 类似，遍历的单位是每个 partition 上的数据。一进一出</p>
+<p>🔼<strong>mapPartitionWithIndex</strong><br>类似于 mapPartitions,除此之外还会携带分区的索引值。</p>
+<p>🔼 <strong>repartition</strong></p>
+<p>repartition（3）</p>
+<p>增加或减少分区.会产生shuffle</p>
+<p>🔼<strong>coalesce</strong></p>
+<p>coalesce(3,false)</p>
+<p>常用于减少分区，第二个参数决定减少分区时是否产生shuffle：true 为产生 shuffle，false 不产生 shuffle。默认是 <code>false</code>。</p>
+<p>如果 coalesce 设置的分区数比原来的 RDD 的分区数还多的话，第二个参数设置为 <code>false</code> 不会起作用，</p>
+<p>如果设置成 true，效果和 repartition 一样。即 </p>
+<p>repartition(numPartitions) = coalesce(numPartitions,true)</p>
+</blockquote>
+<blockquote>
+<p>:arrow_up_small:<strong>sample</strong><br>随机抽样算子，根据传进去的小数按比例进行，有放回或者无放回的抽样。</p>
+<p>:arrow_up_small:<strong>reduceByKey</strong><br>对于K，V格式的RDD，将key相同的RDD，对其value值根据相应的逻辑进行处理。</p>
+<p>🔼<strong>reduceByKeyAndWindow</strong> (f1,f2,s1,s2)  </p>
+<p>窗口函数</p>
+<p>:arrow_up_small:<strong>sortByKey/sortBy</strong><br>作用在 K,V 格式的 RDD 上，对 key 进行升序或者降序排序。</p>
+</blockquote>
+<blockquote>
+<p>:arrow_up_small:<strong>join / leftOuterJoin / rightOuterJoin / fullOuterJoin</strong></p>
+<p>join ：保留公共元素 （K,V）</p>
+<p>leftOutJoin ：保留左边的元素</p>
+<p>rightOutJoin ：保留右边元素</p>
+<p>fullOutJoin ：去重保留 （保留最大分区数）</p>
+<p>作用在 K,V 格式的 RDD 上。根据 K 进行连接，对（K,V）join(K,W)返回（K,(V,W)）</p>
+<ul>
+<li>join 后的分区数与父 RDD 分区数多的那一个相同 </li>
+</ul>
+<p>🔼<strong>union</strong></p>
+<p>都保留 （保留总分区数）</p>
+<p>合并两个数据集。两个数据集的类型要一致。</p>
+<ul>
+<li>返回新的 RDD 的分区数是合并 RDD 分区数的总和。</li>
+</ul>
+<p>🔼<strong>intersection</strong></p>
+<p>取两个数据集的交集</p>
+<p>🔼 <strong>subtract</strong></p>
+<p>取两个数据集的差集</p>
+<p>🔼 <strong>distinct</strong>(map+reduceByKey+map)</p>
+<p>去重</p>
+</blockquote>
+<blockquote>
+<p>🔼 <strong>cogroup</strong></p>
+<p>当调用类型（K,V）和（K，W）的数据上时，返回一个数据集（K，（Iterable<V>,Iterable<W>））</W></V></p>
+<p>🔼<strong>groupByKey</strong><br>作用在 K，V 格式的 RDD 上。根据 Key 进行分组。返回（K，Iterable <V>）。</V></p>
+</blockquote>
+<blockquote>
+<p>🔼<strong>zip</strong><br>将两个 RDD 中的元素（KV 格式/非 KV 格式）变成一个 KV 格式的 RDD,两个 RDD 的个数必须相同。</p>
+<p>🔼<strong>zipWithIndex</strong><br>该函数将 RDD 中的元素和这个元素在 RDD 中的索引号（从 0 开始）组合成（K,V）对。</p>
+<p>🔼</p>
+</blockquote>
+<pre class="line-numbers language-scala"><code class="language-scala"><span class="token keyword">object</span> WordCount <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">def</span> main<span class="token punctuation">(</span>args<span class="token operator">:</span> Array<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">Unit</span> <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">val</span> conf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    conf<span class="token punctuation">.</span>setMaster<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppName<span class="token punctuation">(</span><span class="token string">"WC"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">val</span> context <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span>conf<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//用于了解集群</span>
+
+    <span class="token keyword">val</span> linesRDD <span class="token operator">:</span>RDD<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span> <span class="token operator">=</span> context<span class="token punctuation">.</span>textFile<span class="token punctuation">(</span><span class="token string">"./words.txt"</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">//  lineRDD.filter(x=>&amp;#123;</span>
+<span class="token comment" spellcheck="true">//            x.contains("sh")</span>
+<span class="token comment" spellcheck="true">//        &amp;#125;).foreach(println)</span>
+
+<span class="token comment" spellcheck="true">//  lineRDD.sample(true,0.2).foreach(println)</span>
+
+<span class="token comment" spellcheck="true">//  lineRDD.map((_,1)).reduceByKey(_ + _).sortBy(_._2,false).foreach(println)</span>
+
+<span class="token comment" spellcheck="true">//  lineRDD.map((_,1)).sortByKey().foreach(println)</span>
+
+    <span class="token keyword">val</span> wordRDD <span class="token operator">:</span>RDD<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span>  <span class="token operator">=</span> linesRDD<span class="token punctuation">.</span>flatMap<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>lines <span class="token keyword">=></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      lines<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//匿名函数</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">val</span> KVRDD<span class="token operator">:</span>RDD<span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token builtin">String</span><span class="token punctuation">,</span><span class="token builtin">Int</span><span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">=</span> wordRDD<span class="token punctuation">.</span>map<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> x <span class="token keyword">=></span> <span class="token punctuation">(</span>x<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+    <span class="token keyword">val</span> result<span class="token operator">:</span>RDD<span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token builtin">String</span><span class="token punctuation">,</span><span class="token builtin">Int</span><span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">=</span> KVRDD<span class="token punctuation">.</span>reduceByKey<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token keyword">=></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        println<span class="token punctuation">(</span><span class="token string">"a:"</span><span class="token operator">+</span>a<span class="token operator">+</span><span class="token string">",b:"</span><span class="token operator">+</span>b<span class="token punctuation">)</span>
+        a<span class="token operator">+</span>b    
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>补充</code></p>
+<pre class="line-numbers language-java"><code class="language-java">    val conf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SparkConf</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    conf<span class="token punctuation">.</span><span class="token function">setMaster</span><span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setAppName</span><span class="token punctuation">(</span><span class="token string">"WC"</span><span class="token punctuation">)</span>
+
+    val context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SparkContext</span><span class="token punctuation">(</span>conf<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//用于了解集群</span>
+
+   <span class="token comment" spellcheck="true">//parallelizePairs</span>
+
+   <span class="token comment" spellcheck="true">//join</span>
+Optional<span class="token punctuation">.</span><span class="token function">absent</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+optional<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+optinal<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="5、Action-行动算子"><a href="#5、Action-行动算子" class="headerlink" title="5、Action 行动算子"></a>5、Action 行动算子</h2><h3 id="（1）概念-1"><a href="#（1）概念-1" class="headerlink" title="（1）概念"></a>（1）概念</h3><p>Action 类算子也是一类算子（函数）叫做行动算子，如foreach,collect，count 等。</p>
+<p>Transformations 类算子是延迟执行，Action 类算子是触发执行（立即）。</p>
+<blockquote>
+<p>一个 application 应用程序中有几个 Action 类算子执行，就有几个 job 运行。</p>
+</blockquote>
+<h3 id="（2）Action-类算子"><a href="#（2）Action-类算子" class="headerlink" title="（2）Action 类算子"></a>（2）Action 类算子</h3><blockquote>
+<p>:arrow_up_small: <strong>count</strong><br>返回数据集中的元素数。会在结果计算完成后回收到 Driver 端。</p>
+<p>🔼<strong>countByKey</strong><br>作用到 K,V 格式的 RDD 上，根据 Key 计数相同 Key 的数据集元素。</p>
+<p>🔼<strong>countByValue</strong><br>根据数据集每个元素相同的内容来计数。返回相同内容的元素对应的条数。</p>
+<p>:arrow_up_small: <strong>take(n)</strong><br>返回一个包含数据集前 n 个元素的集合。<br>:arrow_up_small: <strong>first</strong><br>first=take(1),返回数据集中的第一个元素</p>
+<p>🔼 <strong>collect</strong><br>将计算结果回收到 Driver 端。</p>
+<p>:arrow_up_small: <strong>foreach</strong><br>循环遍历数据集中的每个元素，运行相应的逻辑。</p>
+<p>:arrow_up_small: <strong>foreachPartition</strong></p>
+<p>遍历的数据是每个 partition 的数据。所以传的参数为Iterator</p>
+<p>:arrow_up_small:<strong>reduce</strong><br>根据聚合逻辑聚合数据集中的每个元素。</p>
+</blockquote>
+<pre class="line-numbers language-scala"><code class="language-scala">    <span class="token keyword">val</span> conf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    conf<span class="token punctuation">.</span>setMaster<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppName<span class="token punctuation">(</span><span class="token string">"transf"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">val</span> context <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span>conf<span class="token punctuation">)</span>
+
+    <span class="token keyword">val</span> lineADD <span class="token operator">=</span> context<span class="token punctuation">.</span>textFile<span class="token punctuation">(</span><span class="token string">"./wc.txt"</span><span class="token punctuation">)</span>
+    <span class="token keyword">val</span> wordADD <span class="token operator">=</span> lineADD<span class="token punctuation">.</span>flatMap<span class="token punctuation">(</span>x<span class="token keyword">=></span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>x<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+   <span class="token comment" spellcheck="true">// println(wordADD.count())</span>
+
+<span class="token comment" spellcheck="true">//lineADD中数据回收</span>
+    <span class="token keyword">val</span> arr<span class="token operator">=</span> lineADD<span class="token punctuation">.</span>collect<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    arr<span class="token punctuation">.</span>foreach<span class="token punctuation">(</span>println<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">//  val takes: Array[String] = lineRDD.take(5)</span>
+<span class="token comment" spellcheck="true">//  takes.foreach(println)</span>
+
+<span class="token comment" spellcheck="true">//  val str: String = lineRDD.first()</span>
+<span class="token comment" spellcheck="true">//  println(str)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="6、控制算子"><a href="#6、控制算子" class="headerlink" title="6、控制算子"></a>6、控制算子</h2><h3 id="（1）概念：-1"><a href="#（1）概念：-1" class="headerlink" title="（1）概念："></a>（1）概念：</h3><ul>
+<li>控制算子有三种，cache、persist、checkpoint</li>
+<li>以上算子都可以将RDD 持久化，持久化的单位是 partition。</li>
+<li>cache 和 persist 都是懒 执行的。</li>
+<li>必须有一个 action 类算子触发执行。</li>
+<li>cache 和 persist 算子的返回值可赋值给一个变量，在其他 job 中直接使用这个变量就是使用持久化的数据了</li>
+<li>checkpoint 算子不仅能将 RDD 持久化到磁盘，还能切断 RDD 之间的依赖关系（所有父RDD）。</li>
+<li><code>错误：</code>rdd.cache().count() 返回的不是持久化的 RDD，而是一个数值了。</li>
+</ul>
+<h3 id="（2）详解"><a href="#（2）详解" class="headerlink" title="（2）详解"></a>（2）详解</h3><blockquote>
+<p>1️⃣<strong>​ cache</strong><br>默认将 RDD 的数据持久化到内存中。cache 是懒执行。</p>
+<ul>
+<li><code>注意</code>：</li>
+</ul>
+<p>chche () =persist()=persist(StorageLevel.Memory_Only)</p>
+</blockquote>
+<blockquote>
+<p>2️⃣ <strong>persist</strong> </p>
+<p>支持指定持久化级别</p>
+<p>useOffHeap  使用堆外内存</p>
+<p>disk、memory、offheap、deserialized（不序列化）、replication（副本数，默认为1）</p>
+<p>序列化：压缩数据（节省空间，使用数据时要反序列化，会额外消耗CPU性能）</p>
+<p>none 、disk_only、disk_only_2、memeory_only 、memeory_only _ser 、 memory_and_disk 、 memory_and_disk_2</p>
+</blockquote>
+<blockquote>
+<p>3️⃣ <strong>checkpoint</strong>  </p>
+<p>checkpoint 将 RDD 持久化到磁盘，还可以切断 RDD 之间的依赖关系。</p>
+<ul>
+<li>checkpoint 的执行原理：</li>
+</ul>
+<ol>
+<li>当 RDD 的 job 执行完毕后，会从 finalRDD 从后往前回溯。</li>
+<li>当回溯到某一个 RDD 调用了 checkpoint 方法，会对当前的RDD 做一个标记。</li>
+<li>Spark 框架会自动启动一个新的 job，重新计算这个 RDD 的数据，将数据持久化到 HDFS 上。</li>
+</ol>
+<ul>
+<li>优化：</li>
+</ul>
+<p>对 RDD 执行 checkpoint 之前，最好对这个 RDD 先执行cache，这样新启动的 job 只需要将内存中的数据拷贝到 HDFS上就可以，省去了重新计算这一步。</p>
+</blockquote>
+<p>持久化级别：如下</p>
+<p><img src="https://wx1.sinaimg.cn/large/005zftzDgy1g098pwwdc9j30f70aztbu.jpg"></p>
+<pre class="line-numbers language-scala"><code class="language-scala"><span class="token keyword">val</span> cocnf <span class="token operator">=</span> <span class="token keyword">new</span> SparkConf<span class="token punctuation">(</span><span class="token punctuation">)</span>
+conf<span class="token punctuation">.</span>setMaster<span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>setAppname<span class="token punctuation">(</span><span class="token string">"count"</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> context <span class="token operator">=</span> <span class="token keyword">new</span> SparkContext<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">//设置CP在HDFS上的路径</span>
+context<span class="token punctuation">.</span>setCheckPointDir<span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> lineADD <span class="token operator">=</span> context<span class="token punctuation">.</span>textFile<span class="token punctuation">(</span><span class="token string">"./countword.txt"</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> time1 <span class="token operator">=</span> System<span class="token punctuation">.</span>currentTimeMillis<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> c <span class="token operator">=</span>  lineADD<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> time2 <span class="token operator">=</span> System<span class="token punctuation">.</span>currentTimeMillis<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> t1 <span class="token operator">=</span> time2 <span class="token operator">-</span> time1
+
+<span class="token comment" spellcheck="true">//做缓存(persisit（m_o）)</span>
+linelineADD <span class="token operator">=</span> lineADD<span class="token punctuation">.</span>cache<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//做持久化</span>
+lineADD<span class="token punctuation">.</span>persisit<span class="token punctuation">(</span>StorageLevel<span class="token punctuation">.</span>memory_only<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//checkpoint 容错,最好还有cache</span>
+lineADD<span class="token punctuation">.</span>checkpoint<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> time3 <span class="token operator">=</span> System<span class="token punctuation">.</span>currentTimeMillis<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> c <span class="token operator">=</span>  lineADD<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> time4 <span class="token operator">=</span> System<span class="token punctuation">.</span>currentTimeMillis<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">val</span> t2 <span class="token operator">=</span> time4 <span class="token operator">-</span> time3
+
+<span class="token comment" spellcheck="true">//t1 远大于 t2</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="WordCount"><a href="#WordCount" class="headerlink" title="WordCount"></a>WordCount</h2><h3 id="以用Java编写为例"><a href="#以用Java编写为例" class="headerlink" title="以用Java编写为例"></a><code>以用Java编写为例</code></h3><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>shsxt<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>java<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>SparkConf<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>api<span class="token punctuation">.</span>java<span class="token punctuation">.</span>JavaPairRDD<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>api<span class="token punctuation">.</span>java<span class="token punctuation">.</span>JavaRDD<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>api<span class="token punctuation">.</span>java<span class="token punctuation">.</span>JavaSparkContext<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>spark<span class="token punctuation">.</span>api<span class="token punctuation">.</span>java<span class="token punctuation">.</span>function<span class="token punctuation">.</span>*<span class="token punctuation">;</span>
+<span class="token keyword">import</span> scala<span class="token punctuation">.</span>Tuple2<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>Arrays<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>List<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WordCount</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+
+        SparkConf conf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SparkConf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        conf<span class="token punctuation">.</span><span class="token function">setMaster</span><span class="token punctuation">(</span><span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setAppName</span><span class="token punctuation">(</span><span class="token string">"wc"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        JavaSparkContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JavaSparkContext</span><span class="token punctuation">(</span>conf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        JavaRDD<span class="token operator">&lt;</span>String<span class="token operator">></span> rdd <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">textFile</span><span class="token punctuation">(</span><span class="token string">"./wc.txt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+        <span class="token keyword">long</span> count <span class="token operator">=</span> rdd<span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        List<span class="token operator">&lt;</span>String<span class="token operator">></span> collect <span class="token operator">=</span> rdd<span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        List<span class="token operator">&lt;</span>String<span class="token operator">></span> take <span class="token operator">=</span> rdd<span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        String first <span class="token operator">=</span> rdd<span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        JavaRDD<span class="token operator">&lt;</span>String<span class="token operator">></span> wordRDD <span class="token operator">=</span> rdd<span class="token punctuation">.</span><span class="token function">flatMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">FlatMapFunction</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> Iterable<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">call</span><span class="token punctuation">(</span>String line<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+                String<span class="token punctuation">[</span><span class="token punctuation">]</span> split <span class="token operator">=</span> line<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>split<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token keyword">return</span> list<span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">//        wordRDD.map(new Function&lt;String>() &amp;#123;</span>
+<span class="token comment" spellcheck="true">//            @Override</span>
+<span class="token comment" spellcheck="true">//            public String call(String v1) throws Exception &amp;#123;</span>
+<span class="token comment" spellcheck="true">//                return null;</span>
+<span class="token comment" spellcheck="true">//            &amp;#125;</span>
+<span class="token comment" spellcheck="true">//        &amp;#125;)</span>
+
+
+        JavaPairRDD<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> pairRDD <span class="token operator">=</span> wordRDD<span class="token punctuation">.</span><span class="token function">mapToPair</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">PairFunction</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token punctuation">,</span> Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> <span class="token function">call</span><span class="token punctuation">(</span>String word<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Tuple2</span><span class="token punctuation">(</span>word<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+        JavaPairRDD<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> resultRDD <span class="token operator">=</span> pairRDD<span class="token punctuation">.</span><span class="token function">reduceByKey</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Function2</span><span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> Integer<span class="token punctuation">,</span> Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> Integer <span class="token function">call</span><span class="token punctuation">(</span>Integer v1<span class="token punctuation">,</span> Integer v2<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> v1 <span class="token operator">+</span> v2<span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+        JavaPairRDD<span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> String<span class="token operator">></span> reverseRDD <span class="token operator">=</span> resultRDD<span class="token punctuation">.</span><span class="token function">mapToPair</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">PairFunction</span><span class="token operator">&lt;</span>Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span><span class="token punctuation">,</span> Integer<span class="token punctuation">,</span> String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> Tuple2<span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> String<span class="token operator">></span> <span class="token function">call</span><span class="token punctuation">(</span>Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> tuple2<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+                <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Tuple2</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>tuple2<span class="token punctuation">.</span>_2<span class="token punctuation">,</span> tuple2<span class="token punctuation">.</span>_1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        JavaPairRDD<span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> String<span class="token operator">></span> sortByKey <span class="token operator">=</span> reverseRDD<span class="token punctuation">.</span><span class="token function">sortByKey</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        JavaPairRDD<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> result <span class="token operator">=</span> sortByKey<span class="token punctuation">.</span><span class="token function">mapToPair</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">PairFunction</span><span class="token operator">&lt;</span>Tuple2<span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> String<span class="token operator">></span><span class="token punctuation">,</span> String<span class="token punctuation">,</span> Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> <span class="token function">call</span><span class="token punctuation">(</span>Tuple2<span class="token operator">&lt;</span>Integer<span class="token punctuation">,</span> String<span class="token operator">></span> tuple2<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Tuple2</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>tuple2<span class="token punctuation">.</span>_2<span class="token punctuation">,</span> tuple2<span class="token punctuation">.</span>_1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        result<span class="token punctuation">.</span><span class="token function">foreach</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">VoidFunction</span><span class="token operator">&lt;</span>Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">>></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">call</span><span class="token punctuation">(</span>Tuple2<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> tuple2<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>tuple2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Linx系统定时调度：</p>
+<p>crontab</p>
+<p>定时调度脚本文件</p>
+<p>脚本文件中，编辑spark 提交命令</p>
+<blockquote>
+<p> <code>注意：</code>  脚本文件中的命令必须写它的完整路径，否则找不到此命令</p>
+</blockquote>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>Title:</span><a href="/2019/02/16/Spark(1)/">Spark学习（一）</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">Sukie</a></p>
+        <p><span>Created:</span>2019-02-16, 21:30:15</p>
+        <p><span>Updated:</span>2020-08-09, 19:28:45</p>
+        <p>
+            <span>Full URL:</span><a class="post-url" href="/2019/02/16/Spark(1)/" title="Spark学习（一）">https://sukie-sun.github.io/2019/02/16/Spark(1)/</a>
+            <span class="copy-path" data-clipboard-text="From https://sukie-sun.github.io/2019/02/16/Spark(1)/　　By Sukie" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2019/02/17/Spark(2)/">
+                    Spark学习（二）
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2019/02/16/List%E6%96%B9%E6%B3%95/">
+                    List方法
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Spark%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">一、Spark简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFSpark%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">1、什么是Spark？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E4%B8%8EMapReduce%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.2.</span> <span class="toc-text">2、与MapReduce的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81Spark%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">3、Spark运行模式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Sparkcore"><span class="toc-number">2.</span> <span class="toc-text">二、Sparkcore</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81RDD"><span class="toc-number">2.1.</span> <span class="toc-text">1、RDD</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="toc-number">2.1.1.</span> <span class="toc-text">（1）概念：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E4%BA%94%E5%A4%A7%E7%89%B9%E6%80%A7"><span class="toc-number">2.1.2.</span> <span class="toc-text">（2）五大特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89RDD%E7%90%86%E8%A7%A3%E5%9B%BE"><span class="toc-number">2.1.3.</span> <span class="toc-text">（3）RDD理解图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Spark%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">2、Spark任务执行原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81Spark%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">3、Spark代码流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A5%E7%94%A8Scala%E7%BC%96%E5%86%99WordCount%E4%B8%BA%E4%BE%8B"><span class="toc-number">2.3.1.</span> <span class="toc-text">以用Scala编写WordCount为例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81Transformations-%E8%BD%AC%E6%8D%A2%E7%AE%97%E5%AD%90"><span class="toc-number">2.4.</span> <span class="toc-text">4、Transformations 转换算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%A6%82%E5%BF%B5"><span class="toc-number">2.4.1.</span> <span class="toc-text">（1）概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89Transformation-%E7%B1%BB%E7%AE%97%E5%AD%90"><span class="toc-number">2.4.2.</span> <span class="toc-text">（2）Transformation 类算子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81Action-%E8%A1%8C%E5%8A%A8%E7%AE%97%E5%AD%90"><span class="toc-number">2.5.</span> <span class="toc-text">5、Action 行动算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%A6%82%E5%BF%B5-1"><span class="toc-number">2.5.1.</span> <span class="toc-text">（1）概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89Action-%E7%B1%BB%E7%AE%97%E5%AD%90"><span class="toc-number">2.5.2.</span> <span class="toc-text">（2）Action 类算子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E6%8E%A7%E5%88%B6%E7%AE%97%E5%AD%90"><span class="toc-number">2.6.</span> <span class="toc-text">6、控制算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%A6%82%E5%BF%B5%EF%BC%9A-1"><span class="toc-number">2.6.1.</span> <span class="toc-text">（1）概念：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.6.2.</span> <span class="toc-text">（2）详解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WordCount"><span class="toc-number">2.7.</span> <span class="toc-text">WordCount</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A5%E7%94%A8Java%E7%BC%96%E5%86%99%E4%B8%BA%E4%BE%8B"><span class="toc-number">2.7.1.</span> <span class="toc-text">以用Java编写为例</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
+
+    <script>
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Spark学习（一）　| Sukie's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+	  <section id="comments" style="margin: 2em; padding: 2em; background: rgba(255, 255, 255, 0.5)">
+    <div id="vcomment" class="comment"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js"></script>
+    <script>
+      new Valine({
+        el: '#vcomment',
+        notify: 'true',
+        verify: 'true',
+        app_id: "qha2YfPRUR6IN1LfnbliYqay-gzGzoHsz",
+        app_key: "b00TckRiHRVQphnJwuFp9isO",
+        placeholder: "Just go go!",
+        avatar: "mp"
+      });
+    </script>
+</section>	  
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2019/02/17/Spark(2)/" title="Pre: Spark学习（二）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2019/02/16/List%E6%96%B9%E6%B3%95/" title="Next: List方法">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/08/hello-world/">Hello World</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Spark(6)/">Spark学习（六）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/Spark(5)/">Spark学习（五）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/Spark(4)/">Spark学习（四）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/Spark(3)/">Spark学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/17/Spark(2)/">Spark学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Spark(1)/">Spark学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/List%E6%96%B9%E6%B3%95/">List方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Map%E6%96%B9%E6%B3%95/">Map方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/Set%E6%96%B9%E6%B3%95/">Set方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/String%E6%96%B9%E6%B3%95/">String 方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">面试问题总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95/">数组方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/15/Scala%E5%AD%A6%E4%B9%A0/">Scala学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/14/Redis%E5%AD%A6%E4%B9%A0/">Redis学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/29/Storm%E5%AD%A6%E4%B9%A0/">Storm学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/28/Kafka%E5%AD%A6%E4%B9%A0/">Kafka学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/25/Elasticsearch%E5%AD%A6%E4%B9%A0/">Elasticsearch学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/CDH%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0/">CDH部署操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/18/Flume%E5%AD%A6%E4%B9%A0/">Flume学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/HBase%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">HBase性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/HBase%E5%AD%A6%E4%B9%A0/">HBase学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/13/Sqoop%E5%AD%A6%E4%B9%A0/">Sqoop学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84UDF%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/">Hive中常用的UDF函数总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/12/Hive%E4%BC%98%E5%8C%96/">Hive优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/11/Hive%E5%AD%A6%E4%B9%A0/">Hive学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/MapReduce%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">MapReduce源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/07/MapReduce%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/">MapReduce案例实践</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/05/MapReduce%E5%AD%A6%E4%B9%A0/">MapReduce学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Zookeeper%E5%AD%A6%E4%B9%A0/">Zookeeper学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Yarn%E5%AD%A6%E4%B9%A0/">YARN的入门学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Hadoop2.X/">Hadoop2.X</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/HDFS%E5%AD%A6%E4%B9%A0/">HDFS学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A02/">Nginx入门学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Nginx%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A01/">Nginx入门学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/30/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%80%9D%E6%83%B3/">大数据思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A03/">常用Linux命令的学习（三）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A02/">常用Linux命令的学习（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/27/%E5%B8%B8%E7%94%A8Linux%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AD%A6%E4%B9%A01/">常用Linux命令的学习（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/26/Linux%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93MySQL%E5%AE%89%E8%A3%85/">Linux系统数据库MySQL安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/Linux%E7%B3%BB%E7%BB%9FCentOS%206%E5%AE%89%E8%A3%85/">Linux学习之CentOS 6系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85maven%E5%9D%90%E6%A0%87%E4%BE%9D%E8%B5%96/">手动安装maven坐标依赖</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/hexo/">Hexo搭建个人博客</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2020 Sukie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+
+    </div>
+    
+    
+<script src="/js/GithubRepoWidget.js"></script>
+
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var iPad = window.navigator.userAgent.indexOf('iPad');
+      if (iPad > -1) {
+        let bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+        let bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+        $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+      } else if ($(".left-col").css("display") === "none") {
+        $("body").css({
+          "background-image": "url(/background/mobile.jpg)",
+          "background-repeat": "no-repeat",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      } else {
+        var backgroundnum = 5;
+        var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+        $("body").css({
+          "background": backgroundimg,
+          "background-position": "0% 80%",
+          "background-attachment": "fixed",
+          "background-size": "cover"
+        })
+      }
+    })
+  </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+             github: ".github-widget a", 
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+            
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script src="/js/busuanzi_pure_mini.js"></script>
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?6b4caaf6c3a0542e82c2abbce9da41cc"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"live2d_models/live2d-widget-model-chitose"},"display":{"position":"right","width":250,"height":350,"hOffset":-50,"vOffset":-85},"mobile":{"show":false},"react":{"opacityDefault":0.9,"opacityOnHover":0.3}});</script></body>
+</html>
