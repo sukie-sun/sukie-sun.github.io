@@ -11,10 +11,18 @@ subtitle: '新世界编程'
 description: 'Hello World！'
 keywords:
 author: Sukie
-language: en
+language: en ##zh-Hans #en
 timezone: ''
 
+# 法一
 # 统计字数和阅读时长
+## npm i --save hexo-wordcount
+## themes/yelee/layout/_partial/post/tag.ejs
+## themes/yelee/source/css/_partial/tagcloud.styl
+### content: “\27A4” 是 unicode 图标编码，可以换成其他的
+### unicode 图标 :https://unicode-table.com/cn
+### Font Awesome Icon：http://fontawesome.io/icons
+# 法二
 word_count: true
 
 # URL
@@ -54,6 +62,35 @@ skip_render:
     -  404/404.html
     -  static/**
 
+## 添加二次元人物
+## 安装插件 npm install -save hexo-helper-live2d
+## npm install --save live2d-widget-model-izumi
+## live2d: https://github.com/EYHN/hexo-helper-live2d
+live2d:
+  enable: true
+  scriptFrom: local
+  pluginRootPath: live2dw/
+  pluginJsPath: lib/
+  pluginModelPath: assets/
+  tagMode: false
+  log: false
+  model:
+    use: live2d_models/live2d-widget-model-chitose ##live2d-widget-model-izumi ##加载本地 model 文件
+    scale: 1
+    hHeadPos: 0.5
+    vHeadPos: 0.618
+  display:
+    position: right
+    width: 150
+    height: 300
+    hOffset: -50
+    vOffset: -85
+  mobile:
+    show: true
+  react:
+    opacityDefault: 0.9
+    opacityOnHover: 0.3
+
 ##----------------------------------------------------------
    
 # Writing
@@ -78,11 +115,7 @@ highlight:
   tab_replace: ''
   wrap: true
   hljs: false
-prismjs:
-  enable: false
-  preprocess: true
-  line_number: true
-  tab_replace: ''
+
 
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
@@ -125,7 +158,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-##theme: landscape
+##theme: landscape   
 theme: yelee
 
 # Deployment
@@ -136,3 +169,43 @@ deploy:
   repo: git@github.com:sukie-sun/sukie-sun.github.io.git
 # repo: git@gitee.com:sunrisefly/sunrisefly.git
   branch: master 
+  
+  
+## index_generator:
+##   per_page: 15
+
+archive_generator:
+  per_page: 0
+  yearly: true
+  monthly: true
+
+tag_generator:
+  per_page: 0
+
+disqus_shortname: 
+
+search:
+  path: search.xml
+  field: post
+
+# https://github.com/unhealthy/hexo-all-minifier
+html_minifier:
+  enable: false
+  exclude: 
+
+css_minifier:
+  enable: false
+  exclude: 
+
+js_minifier:
+  enable: false
+  mangle: true
+
+image_minifier:
+  enable: false
+  interlaced: true
+  multipass: true
+  optimizationLevel: 2
+  pngquant: false
+  progressive: true  
+  

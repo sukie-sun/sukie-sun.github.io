@@ -118,17 +118,24 @@
             background: white;
             border: 5px solid #88acdb;
             box-shadow: 0 0 1.5em #88acdb;
-            animation: profilepic .15s linear infinite alternate;
-            -webkit-animation: profilepic .15s linear infinite alternate; 
-        }
+     //       animation: profilepic .15s linear infinite alternate;
+     //       -webkit-animation: profilepic .15s linear infinite alternate; 
+              animation: profilepic 5s linear infinite;
+              -webkit-animation: profilepic 5s linear infinite; // profilepic 动画，周期 5 秒，速度不变，无限循环   
+// animation: name duration timing-function delay iteration-count direction;
+// animation 是 CSS 动画属性：第一个参数是用 @keyframes 定义的动画，第二个参数是单次动画持续时间，
+//            第三个是动画的速度曲线，第四个参数是动画开始之前的延迟，第五个是动画应该播放的次数，最后一个规定是否应该轮流反向播放动画		
+		}
         @keyframes profilepic {
             0% {
-                right: 4px;
-                top: 1x;
+//                right: 4px;
+//                top: 1x;
+                  transform: rotate(360deg);
             }
             100% {
-                right: 0px;
-                top: -1px;
+//                right: 0px;
+//                top: -1px;
+                  transform: rotate(0deg);
             }
         }
     }

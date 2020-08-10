@@ -1,0 +1,12 @@
+<script src="<%- theme.CDN.aplayer %>"></script>
+<script src="<%- theme.CDN.player %>"></script>
+
+<div class="aplayer" data-id="<%= post.music %>" data-server="netease" data-type="song" data-autoplay="true"></div>
+<div style="height: 16px"></div>
+
+<script>
+  // 去除移动端的播放器, 减少流量消耗
+  if ($(".left-col").css("display") === "none") {
+    $(".aplayer").remove();
+  }
+</script>

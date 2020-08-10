@@ -136,7 +136,7 @@ base_font_size: 16  #px, 16 - 24
 
 ## General Color Scheme | 主题配色方案 
 ## 可用值 Value: yilia
-color_scheme: 
+color_scheme: yilia
 
 highlight_style:
   #on: true
@@ -199,7 +199,7 @@ friends:
 #friends: false
 
 #是否开启“关于我”。
-aboutme: 专注于前端
+aboutme: 专注于新世界,专注于新编程
 #aboutme: false
 
 # Open link in a new tab | 是否在新窗口打开链接
@@ -213,7 +213,8 @@ open_in_new:
   categories: false # 分类
   article_nav: false # 导航
   archives: true # 归档
-  mini_archives: true # 迷你归档
+#  mini_archives: true # 迷你归档
+  mini_archives: false # 迷你归档
   menu: false # 边栏菜单
   friends: true  # 友情链接
   socail: true # 社交图标
@@ -232,7 +233,8 @@ ie_updater:
 ##----------------------------------------------------
 # Tab Title Change | 标签页标题切换
 tab_title_change: 
-  on: false
+#  on: false
+  on: true
   left_tab_title: '(つェ⊂) 别走嘛~ '
   return_tab_title: '(*´∇｀*) 我来啦~ '
 
@@ -305,6 +307,12 @@ progressBar:
   type: "minimal"  # Keep Quotes | 保留引号避免出错
   color: blue
 
+# 打赏
+# 将on改为false去掉打赏
+donate:
+  on: true
+  multipay: //src.wangriyu.wang/images/blog/multipay.png
+
 CDN:
   jquery: //cdn.bootcss.com/jquery/2.2.4/jquery.min.js
   require: //cdn.bootcss.com/require.js/2.2.0/require.min.js
@@ -319,3 +327,10 @@ CDN:
   mathjax: //cdn.bootcss.com/mathjax/2.6.1/MathJax.js
   scrollreveal: //cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js
   valine: //unpkg.com/valine@1.2.0-beta1/dist/Valine.min.js
+  aplayer: //src.wangriyu.wang/lib/Aplayer/APlayer.min.js # 1.10.1
+  aplayer_css: //src.wangriyu.wang/lib/Aplayer/APlayer.min.css # 1.10.1
+  aos_css: //cdn.bootcss.com/aos/2.2.0/aos.css
+  aos_js: //cdn.bootcss.com/aos/2.2.0/aos.js
+  bubbly_bg: //cdn.jsdelivr.net/npm/bubbly-bg@1.0.0/dist/bubbly-bg.js
+  gitalk_js: //unpkg.com/gitalk/dist/gitalk.min.js
+  gitalk_css: //unpkg.com/gitalk/dist/gitalk.css
